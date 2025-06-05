@@ -20,10 +20,6 @@ class DocumentRevision extends Model
         'progress_status',
         'date_prepared',
         'progress_status',
-        'division_chief_id',
-        'division_chief_approved_date',
-        'qmr_id',
-        'qmr_approved_date',
         'file_type',
         'title',
         'document_type',
@@ -32,7 +28,8 @@ class DocumentRevision extends Model
         'retention_period',
         'is_new_version',
         'pdf_dir',
-        'email'
+        'email',
+        'is_qmr'
     ];
 
 

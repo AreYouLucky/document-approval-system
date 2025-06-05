@@ -59,10 +59,10 @@ class DCReviewController extends Controller
 
     public function initialReview($id)
     {
-        if (Auth::user()) {
+        if (Auth::guard('hris')->user()) {
             return Inertia::render('DocumentChange/Dc/DcInitialReview');
         } else {
-            return Inertia::render(('DocumentChange/Dc/LoginDc'));
+            return Inertia::render(('Auth/LoginDc'));
         }
     }
 
@@ -112,8 +112,7 @@ class DCReviewController extends Controller
     }
     public function loadApprovedDocuments()
     {
-        return DocumentRevision::select('document_revisions.*')
-            ->join('documents', 'document_revisions.document_id', '=', 'documents.document_id')
+        return DocumentRevision::join('documents', 'document_revisions.document_id', '=', 'documents.document_id')
             ->whereNot('document_revisions.process_type', 3)
             ->whereRaw('document_revisions.revision_id = (
             SELECT MAX(dr.revision_id)
@@ -136,6 +135,14 @@ class DCReviewController extends Controller
                 $file->storeAs('/iso_documents', $request->document_dir, 'public');
             }
 
+            if ($request->is_qmr == 1) {
+                $name = 'Top management';
+                $email = env('tm_email');
+            } else {
+                $name = 'QMR';
+                $email = env('qmr_email');
+            }
+
             if (!$document_revision) {
                 return response()->json([
                     'status' => 'failed',
@@ -145,7 +152,7 @@ class DCReviewController extends Controller
             if ($request->status == 1) {
                 $status = 'Approved(redirect to qmr)';
                 $document_revision->progress_status = 2;
-                $msg = "Your document change request for \"" . $request->title . "\", Revision No. " . $request->last_revision_no . ", has been initially reviewed and approved by the QMS Document Custodian. Please await the review by the QMR.";
+                $msg = "Your document change request for \"" . $request->title . "\", Revision No. " . $request->last_revision_no . ", has been initially reviewed and approved by the QMS Document Custodian. Please await the review by the " . $name . ".";
             } else if ($request->status == 2) {
                 $status = 'For Revision(redirect back to process owner)';
                 $document_revision->progress_status = 1;
@@ -223,10 +230,11 @@ class DCReviewController extends Controller
                     'sender' => $user->full_name,
                     'position' => 'Document Custodian,  ' . $user->position,
                     'code' => $encryptedId,
-                    'link' => 'http://127.0.0.1:8000/qmr/review-document/' . $encrypted
+                    'link' => 'http://127.0.0.1:8000/qmr/review-document/' . $encrypted . '/' . $request->is_qmr
                 ];
 
-                Mail::to('cagadasjohnpurchases@gmail.com')->send(new SendMail($details));
+                $subject = $request->title . ' - QMS Document Review';
+                Mail::to($email)->send(new SendMail($details, $subject));
             }
 
             $details = [
@@ -254,7 +262,7 @@ class DCReviewController extends Controller
         if (Auth::user()) {
             return Inertia::render('DocumentChange/Dc/DcFinalReview');
         } else {
-            return Inertia::render(('DocumentChange/Dc/FinalLoginDc'));
+            return Inertia::render(('Auth/FinalLoginDc'));
         }
     }
 
@@ -303,8 +311,14 @@ class DCReviewController extends Controller
             $file->storeAs('/iso_documents', $request->filename, 'public');
             $wordPath = storage_path('app/public/iso_documents/' . $request->filename);
             $pdfDirectory = storage_path('app/public/iso_documents/');
-            $libreOfficePath = '"C:\\Program Files\\LibreOffice\\program\\soffice.exe"';
+            $libreOfficePath = env('libre_office_path');
+
+            // Escape paths
+            $libreOfficePath = escapeshellarg($libreOfficePath);
+
             $command = "$libreOfficePath --headless --convert-to pdf --outdir $pdfDirectory $wordPath";
+
+
             shell_exec($command);
             $originalNameWithoutExtension = pathinfo($request->filename, PATHINFO_FILENAME);
             $convertedPdfPath = $pdfDirectory . $originalNameWithoutExtension . '.pdf';
@@ -363,14 +377,11 @@ class DCReviewController extends Controller
     }
     public function submitFinalReview(Request $request)
     {
-        $request->validate([
-            'retention_period' => 'required|string',
-        ]);
-        $user = Auth::user();
-
+        $user = Auth::guard('hris')->user();
+        $file = $request->file('file');
+        $file->storeAs('/iso_documents', $request->filename, 'public');
         DocumentRevision::where('revision_id', $request->revision_id)
             ->update([
-                'retention_period' => Carbon::parse($request->retention_period)->format('Y-m-d H:i:s'),
                 'pdf_dir' => $request->pdf_name,
                 'progress_status' => 7
             ]);

@@ -5,18 +5,14 @@ import { usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import SelectSearch from '@/Components/Forms/SelectSearch';
 import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
-import { FaDownload } from "react-icons/fa";
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
 
 function IsoDocuments() {
-    const user = usePage().props.auth.user;
     const [data, setData] = useState([]);
     const [currentData, setCurrentData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [divisionSearch, setDivisionSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
 
     const division = [
         { name: "FAD", value: 1 },
@@ -26,66 +22,14 @@ function IsoDocuments() {
     ];
 
     useEffect(() => {
-        if (user.qms_role === 'Process Owner') {
-            getDocuments('/process/load-approved-documents')
-        }
-        else if (user.qms_role === 'Document Custodian') {
-            getDocuments('/dc/load-approved-documents')
-        }
-        else {
-            getDocuments('/qmr/load-approved-documents')
-        }
+        getDocuments()
     }, []);
 
-    const getDocuments = (url) => {
-        axios.get(url).then(
+    const getDocuments = () => {
+        axios.get('/load-documents').then(
             res => {
                 setData(res.data);
                 setCurrentData(res.data)
-            }
-        )
-    }
-
-    const convertDate = (date) => {
-        if (!date) return "";
-        const parsedDate = new Date(date);
-        return parsedDate.toLocaleDateString("en-US", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-        });
-    };
-
-    const downloadReports = () => {
-        axios.get('/load-documents-report').then(
-            res => {
-                const data = res.data;
-                const workbook = new ExcelJS.Workbook();
-                const worksheet = workbook.addWorksheet('Reports');
-
-                worksheet.columns = [
-                    { header: 'TYPE OF DOCUMENT', key: 'document_type', width: 25 },
-                    { header: 'DOCUMENT CODE', key: 'code', width: 25 },
-                    { header: 'DOCUMENT TITLE', key: 'title', width: 40 },
-                    { header: 'RESPONSIBLE PERSON', key: 'process_owner', width: 20 },
-                    { header: 'REVISION No.', key: 'version_no', width: 20 },
-                    { header: 'EFFECTIVITY DATE.', key: 'effectivity_date', width: 20 }
-                ];
-                data.forEach(item => {
-                    worksheet.addRow({
-                        document_type: item.document_type,
-                        code: item.code,
-                        title: item.title,
-                        process_owner: item.process_owner,
-                        version_no: item.version_no,
-                        effectivity_date: convertDate(item.effectivity_date),
-                    });
-                });
-
-                workbook.xlsx.writeBuffer().then(buffer => {
-                    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                    saveAs(blob, 'document-reports.xlsx');
-                });
             }
         )
     }
@@ -107,12 +51,13 @@ function IsoDocuments() {
     }
 
     const filteredDataByDivision = () => {
-        if (division === 'Division') {
+        if (divisionSearch === '') {
             PaginateData()
         }
         else {
-            let dataFiltered = data.filter((data) =>
-                data.division.includes(divisionSearch.toLowerCase()))
+            let dataFiltered = data.filter((data) => data.division === divisionSearch);
+
+
             setCurrentData(dataFiltered.slice(indexOfFirst, indexOfLast));
         }
     }
@@ -159,28 +104,14 @@ function IsoDocuments() {
     }, [divisionSearch])
 
     return (
-        <div className="w-full bg-gray-100 dark:bg-gray-900 flex justify-center md:py-2 md:px-10 px-2">
-            <div className='w-full max-w-[100vw] md:max-w-[70vw] lg:max-w-[80vw] md:px-10 p-2'>
+        <div className="w-full bg-gray-100 dark:bg-gray-900 flex justify-center md:py-10 md:px-6 px-2">
+            <div className='w-full max-w-[100vw] md:max-w-[70vw] lg:max-w-[80vw] md:px-4 p-2'>
                 <div className="mb-5">
                     <div className="py-5 pt-10 px-4 mx-auto  text-center relative w-full">
-                        <h1 className="mb-4 text-xl font-bold tracking-tight leading-none text-gray-800 md:text-3xl dark:text-white ">
+                        <h1 className="mb-4 text-xl roboto-bold text-gray-800 md:text-3xl dark:text-white ">
                             ISO Related Documents
                         </h1>
                         <div className="flex flex-col md:flex-row items-center justify-center gap-2 w-full max-w-[100%] md:max-w-[80%] mx-auto py-4">
-                            {/* SelectSearch component */}
-                            {user.qms_role !== 'Process Owner' &&
-                                <div className="w-full md:w-1/6">
-                                    <SelectSearch
-                                        id="division"
-                                        items={division}
-                                        itemValue="value"
-                                        itemName="name"
-                                        name="division"
-                                        defaultValue="Division"
-                                        onChange={handleDivisionSearch}
-                                    />
-                                </div>
-                            }
 
 
                             {/* Search input */}
@@ -197,14 +128,21 @@ function IsoDocuments() {
                                     onChange={handleSearch}
                                 />
                             </div>
-                            {user.qms_role !== 'Process Owner' &&
-                                <button className='relative p-4 ps-10 rounded-lg border bg-blue-500 text-gray-50 roboto-bold text-sm' onClick={downloadReports}>
-                                    <div className="absolute inset-y-0 left-0 flex items-center ps-3.5 pointer-events-none">
-                                        <FaDownload className="w-4 h-4 text-gray-50 dark:text-gray-400" />
-                                    </div>
-                                    Download Report
-                                </button>
-                            }
+
+                            {/* SelectSearch component */}
+
+                            <div className="w-full md:w-1/6">
+                                <SelectSearch
+                                    id="division"
+                                    items={division}
+                                    itemValue="value"
+                                    itemName="name"
+                                    name="division"
+                                    defaultValue="Division"
+                                    onChange={handleDivisionSearch}
+                                />
+                            </div>
+
                         </div>
 
                     </div>
@@ -218,7 +156,7 @@ function IsoDocuments() {
                 </div>
                 <div className='w-full flex justify-between py-5'>
                     <div>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <span className="md:text-sm text-xs text-gray-600 dark:text-gray-400">
                             Showing <span className="font-semibold text-gray-800 dark:text-white">{count.from}</span> to <span className="font-semibold text-gray-600 dark:text-white">{count.to}</span> of <span className="font-semibold text-gray-600 dark:text-white">{count.total}</span> Entries
                         </span>
                     </div>

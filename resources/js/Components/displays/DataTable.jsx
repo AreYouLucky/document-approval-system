@@ -1,22 +1,16 @@
 const DataTable = ({
-    headers, className, children
+    headers, children
 }) => {
-    if (document.getElementById("pagination-table") && typeof simpleDatatables.DataTable !== 'undefined') {
-        const dataTable = new simpleDatatables.DataTable("#pagination-table", {
-            paging: true,
-            perPage: 5,
-            perPageSelect: [5, 10, 15, 20, 25],
-            sortable: false
-        });
-    }
+
 
 
     return (
-        <div className="relative overflow-x-auto sm:rounded-md ">
+        <div className="relative overflow-visible sm:rounded-md">
+
             <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 bg-white dark:bg-gray-900 ">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead className="text-xs text-slate-800 uppercase bg-blue-100 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 rounded-md ">
+                    <thead className="text-xs text-gray-50 uppercase bg-blue-500 dark:bg-gray-700 dark:text-gray-400 ">
+                        <tr >
                             {headers.map((header, index) => (
                                 <th
                                     key={index}

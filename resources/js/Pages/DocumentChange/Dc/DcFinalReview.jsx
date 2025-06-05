@@ -11,8 +11,7 @@ import { SpreadsheetComponent } from '@syncfusion/ej2-react-spreadsheet';
 import { DocumentEditorContainerComponent, Toolbar, Inject, Print } from '@syncfusion/ej2-react-documenteditor';
 import PrimaryButton from '@/Components/Forms/PrimaryButton';
 import AffixSignatureNote from './Partial/AffixSignatureNote';
-import SelectDate from '@/Components/Forms/SelectDate';
-import InputLabel from '@/Components/Forms/InputLabel';
+import RemoveSignatureNote from './Partial/RemoveSignatureNote';
 import InputError from '@/Components/Forms/InputError';
 import SavePdfNote from './Partial/SavePdfNote';
 import { saveAs } from "file-saver";
@@ -29,7 +28,6 @@ export default function DcFinalReview() {
     const [document, setDocument] = useState({});
     const [file, setFile] = useState({});
     const [link, setLink] = useState('');
-    const [retentionPeriod, setRetentionPeriod] = useState();
     const [pdf, setPdf] = useState('');
     const [fileName, setFileName] = useState('');
     const [pdfFile, setPdfFile] = useState(null);
@@ -39,13 +37,14 @@ export default function DcFinalReview() {
     const [isDownload, setIsDownload] = useState(false);
     const [successDialog, setSuccessDialog] = useState(false)
     const [message, setMessage] = useState('')
-
+    const [isFinal, setIsFinal] = useState(true)
     const division = [
         { name: "FAD", value: 1 },
         { name: "IRAD", value: 2 },
         { name: "CRPD", value: 3 },
         { name: "OD-MISPS", value: 4 },
     ];
+
     const spreadsheetRef = useRef(null);
     let editorObj = null;
     const process_type = [
@@ -57,6 +56,7 @@ export default function DcFinalReview() {
         getDocument();
     }, [])
 
+
     useEffect(() => {
         openDocument();
     }, [file])
@@ -67,6 +67,18 @@ export default function DcFinalReview() {
         const options = {
             year: "numeric",
             month: "short",
+            day: "numeric",
+        };
+        const humanReadableDate = parsedDate.toLocaleString("en-US", options);
+        return humanReadableDate;
+    };
+
+    const convertDateSignature = (date) => {
+        if (!date) return "";
+        const parsedDate = new Date(date);
+        const options = {
+            year: "numeric",
+            month: "numeric",
             day: "numeric",
         };
         const humanReadableDate = parsedDate.toLocaleString("en-US", options);
@@ -136,7 +148,7 @@ export default function DcFinalReview() {
 
     const insertSignature = async (number) => {
 
-        let dateProcessed = convertDate(document.latest_revision?.effectivity_date);
+        let dateProcessed = convertDateSignature(document.latest_revision?.effectivity_date);
         let imageUrl = '/storage/signatures/qmr.png';
 
         if (Number(number) === 1) {
@@ -148,7 +160,7 @@ export default function DcFinalReview() {
         } else if (Number(number) === 4) {
             imageUrl = '/storage/signatures/misps_chief.png';
         } else {
-            dateProcessed = convertDate(document.latest_revision?.effectivity_date);
+            dateProcessed = convertDateSignature(document.latest_revision?.effectivity_date);
         }
 
         if (document.latest_revision?.file_type === 1) {
@@ -215,7 +227,17 @@ export default function DcFinalReview() {
         formData.append('filename', document.latest_revision?.document_dir);
         formData.append('file_type', document.latest_revision?.file_type);
         formData.append('version', document.latest_revision?.version_no);
-        sendFormData(formData);
+        formData.append('pdf_name', getOriginalName(document.latest_revision?.document_dir) + '_' + document.latest_revision?.version_no + '.pdf');
+        formData.append('revision_id', document.latest_revision?.revision_id);
+        formData.append('document_name', document.latest_revision?.title);
+        formData.append('email', document.latest_revision?.email);
+        formData.append('last_revision_no', document.latest_revision?.version_no);
+        if (isFinal == true) {
+            sendFormData(formData);
+        }
+        else {
+            submitFinalReview(formData)
+        }
     };
     const savetoPDF = async () => {
         setProcessing(true)
@@ -228,7 +250,17 @@ export default function DcFinalReview() {
                 formData.append('file_type', document.latest_revision?.file_type);
                 formData.append('version', document.latest_revision?.version_no);
                 formData.append('document_id', document.document_id);
-                sendFormData(formData);
+                formData.append('pdf_name', getOriginalName(document.latest_revision?.document_dir) + '_' + document.latest_revision?.version_no + '.pdf');
+                formData.append('revision_id', document.latest_revision?.revision_id);
+                formData.append('document_name', document.latest_revision?.title);
+                formData.append('email', document.latest_revision?.email);
+                formData.append('last_revision_no', document.latest_revision?.version_no);
+                if (isFinal == true) {
+                    sendFormData(formData);
+                }
+                else {
+                    submitFinalReview(formData)
+                }
             }
             else {
                 spreadsheetRef.current.refresh();
@@ -315,23 +347,14 @@ export default function DcFinalReview() {
         )
     }
 
-    const submitFinalReview = () => {
-        let formData = new FormData();
-        formData.append('retention_period', retentionPeriod ?? '');
-        formData.append('pdf_name', getOriginalName(document.latest_revision?.document_dir) + '_' + document.latest_revision?.version_no + '.pdf');
-        formData.append('revision_id', document.latest_revision?.revision_id);
-        formData.append('document_name', document.latest_revision?.title);
-        formData.append('email', document.latest_revision?.email);
-        formData.append('last_revision_no', document.latest_revision?.version_no);
+    const submitFinalReview = (formData) => {
+        setIsFinal(true)
+        console.log('heresss')
         axios.post('/dc/submit-final-review', formData).then(
             res => {
                 setSuccessDialog(true)
                 setLink('/dc/initial-review-list')
                 setMessage('Final Review Successfully Submitted!')
-            }
-        ).catch(
-            err => {
-                setErrors(err.response.data.errors)
             }
         )
     }
@@ -359,6 +382,9 @@ export default function DcFinalReview() {
                                             <span >
                                                 {process_type.find(pt => pt.value === Number(document.latest_revision?.process_type))?.name || "Unknown Process"}
                                             </span>
+                                        </li>
+                                        <li>
+                                            <b className="mr-2 font-semibold">Document Type: </b> {document.latest_revision?.document_type || "N/A"}
                                         </li>
                                         <li>
                                             <b className="mr-2 font-semibold">Version No: </b> {document.latest_revision?.version_no || "N/A"}
@@ -406,7 +432,7 @@ export default function DcFinalReview() {
                             </div>
                         </div>
                         <div className="w-full md:grid md:grid-cols-4 gap-2 flex flex-col-reverse">
-                            <div className="overflow-hidden bg-white shadow-lg sm:rounded-lg md:col-span-3  ">
+                            <div className="overflow-hidden bg-white shadow-lg sm:rounded-lg md:col-span-3  h-fit">
                                 {document.latest_revision?.file_type === 1 ? (
                                     <div className='w-full'>
                                         <DocumentEditorContainerComponent height={'95vh'}
@@ -420,7 +446,7 @@ export default function DcFinalReview() {
                                 ) : (
                                     <div className='w-full'>
                                         <SpreadsheetComponent
-                                            ref={spreadsheetRef} height={'95vh'}
+                                            ref={spreadsheetRef} height={'97vh'}
                                             openUrl="https://localhost:7086/api/Spreadsheet/Open"
                                             saveUrl='https://localhost:7086/api/Spreadsheet/Save'
                                             allowOpen={true}
@@ -517,20 +543,27 @@ export default function DcFinalReview() {
 
                                 </div>
 
+                                <div className='w-full p-4 border rounded-lg bg-white dark:bg-gray-800 shadow-lg'>
+                                    <h5 className='roboto-bold text-center pb-2'>
+                                        Finalize Document Panel
+                                    </h5>
+                                    <RemoveSignatureNote></RemoveSignatureNote>
+                                    <div className='flex flex-row gap-1 mt-2'>
+                                        <PrimaryButton className='bg-blue-500 w-full text-gray-50 flex justify-center' onClick={() => (setIsFinal(false))} disabled={pdf === '' ? true : false}>
+                                            <span className='p-1'>
+                                                Done
+                                            </span>
+                                        </PrimaryButton>
+                                    </div>
+                                </div>
+
                                 <div className='w-full mt-2 p-4 border rounded-lg bg-white dark:bg-gray-800 shadow-lg'>
                                     <h5 className='roboto-bold text-center pb-2'>
                                         Submit Final Review
                                     </h5>
-                                    <InputLabel htmlFor="retention_period" value="Retention Period" />
-                                    <SelectDate
-                                        className=""
-                                        id="retention_period"
-                                        onChange={(e) => setRetentionPeriod(e.target.value)}
-                                    />
-                                    <InputError message={errors.retention_period} className="mt-2" />
                                     <PrimaryButton
-                                        className='text-md bg-blue-500 w-full text-gray-50 flex justify-center mt-3'
-                                        onClick={submitFinalReview} disabled={pdf === '' ? true : false}>
+                                        className='text-md bg-blue-500 w-full text-gray-50 flex justify-center mt-1'
+                                        onClick={savetoPDF} disabled={isFinal} >
                                         <span className='p-1'>
                                             Close Request
                                         </span>

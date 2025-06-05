@@ -101,6 +101,7 @@ export default function Dashboard() {
     useEffect(() => {
         openDocument();
     }, [data.file])
+    
 
     //DEBOUNCE api CALL
     useEffect(() => {
@@ -259,7 +260,7 @@ export default function Dashboard() {
                 <BreadCrumbs tab={tabs} className="mb-2" />
                 <form onSubmit={handleSubmit}>
                     <div className="w-full  grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className={`mb-4 text-gray-900 w-full  dark:text-gray-50 bg-white dark:bg-gray-800  p-8 col-span-2 rounded-lg shadow-lg border`}>
+                        <div className={`mb-4 text-gray-900 w-full  dark:text-gray-50 bg-white dark:bg-gray-800  p-8 col-span-2 rounded-lg shadow-sm border`}>
                             <h2 className={`  font-bold mb-4 text-xl`}>
                                 Document Change Request
                             </h2>
@@ -356,7 +357,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         </div>
-                        <div className={`mb-4 text-gray-900 w-full  dark:text-gray-50 bg-white dark:bg-gray-800  p-8 rounded-lg shadow-lg border grid grid-cols-1 md:grid-cols-2`}>
+                        <div className={`mb-4 text-gray-900 w-full  dark:text-gray-50 bg-white dark:bg-gray-800  p-8 rounded-lg shadow-sm border grid grid-cols-1 md:grid-cols-2`}>
 
                             {/* Reason of Conception/Revision */}
                             <div className={`col-span-2`}>

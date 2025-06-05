@@ -18,7 +18,7 @@ function EventCard({ data }) {
             <article className="hover:scale-105 duration-500 relative lg:pt-[160px] md:pt-[260px] pt-[130px]  shadow-xl rounded-lg mx-auto h-[450px] border overflow-hidden bg-white dark:bg-transparent w-full">
                 <button className='w-full' onClick={()=>setShowEventModal(true)}>
                     <div className="w-full rounded-lg">
-                        <div className="absolute top-0 left-0 w-full h-100 rounded-t-lg overflow-hidden z-0 ">
+                        <div className="absolute top-0 left-0 w-full h-100 rounded-t-lg  z-0 ">
                             <img src={`/storage/images/events/${data.title}/${data.img}`} alt="" className="w-full h-[50%] object-cover" />
                         </div>
                         <div className="w-full px-4 pb-4 mt-2 pt-2 bg-white dark:bg-gray-800 rounded-b-lg relative z-10 min-h-[300px]">

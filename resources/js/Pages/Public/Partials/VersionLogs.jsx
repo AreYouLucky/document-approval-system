@@ -69,7 +69,7 @@ function VersionLogs({ logs }) {
                         </ol>
                     </>
                 ) : (
-                    <p>No version logs available.</p>
+                    <p className='text-center'>No version logs available.</p>
                 )}
         </div>
     )

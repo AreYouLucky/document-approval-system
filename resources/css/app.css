@@ -2,11 +2,102 @@
 @tailwind components;
 @tailwind utilities;
 
-#app { height: 100% }
+#app {
+  height: 100%
+}
+html {
+  scroll-padding-top: 80px; 
+}
+
 html,
 body {
   position: relative;
-  height: 100%;
+  scroll-behavior: inherit;
+}
+
+
+/* See more btn css */
+.container {
+  --color: #a5a5b0;
+  --size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  font-size: var(--size);
+  user-select: none;
+  fill: var(--color);
+}
+
+.container .chevron-right {
+  position: absolute;
+  animation: keyframes-return .5s;
+}
+
+.container .chevron-down {
+  position: absolute;
+  display: none;
+  animation: keyframes-fill .5s;
+}
+
+/* ------ On check event ------ */
+.container input:checked ~ .chevron-right {
+  display: none;
+}
+
+.container input:checked ~ .chevron-down {
+  display: block;
+}
+
+/* ------ Hide the default checkbox ------ */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* ------ Animation ------ */
+@keyframes keyframes-fill {
+  0% {
+    transform: rotate(-90deg) scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: rotate(0deg) scale(1.2);
+  }
+}
+
+@keyframes keyframes-return {
+  0% {
+    transform: rotate(90deg) scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: rotate(0deg) scale(1.2);
+  }
+}
+
+
+.custom-gallery .image-gallery-slide img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.custom-gallery .image-gallery-image {
+  max-height: 400px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .custom-gallery .image-gallery-image {
+    max-height: 200px;
+  }
 }
 
 body {
@@ -17,6 +108,7 @@ body {
   margin: 0;
   padding: 0;
 }
+
 .swiper {
   width: 100%;
   padding-top: 50px;
@@ -48,216 +140,216 @@ body {
 
 
 .bg-custom-radial {
-    min-height: 100vh;
-    height: 100%;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1440' height='560' preserveAspectRatio='none' viewBox='0 0 1440 560'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1098%26quot%3b)' fill='none'%3e%3crect width='1440' height='560' x='0' y='0' fill='rgba(161%2c 227%2c 249%2c 1)'%3e%3c/rect%3e%3cpath d='M 0%2c7 C 57.6%2c63.4 172.8%2c253.4 288%2c289 C 403.2%2c324.6 460.8%2c158.4 576%2c185 C 691.2%2c211.6 748.8%2c423.2 864%2c422 C 979.2%2c420.8 1036.8%2c201.4 1152%2c179 C 1267.2%2c156.6 1382.4%2c283.8 1440%2c310L1440 560L0 560z' fill='rgba(87%2c 143%2c 202%2c 1)'%3e%3c/path%3e%3cpath d='M 0%2c233 C 96%2c272 288%2c437.4 480%2c428 C 672%2c418.6 768%2c165.2 960%2c186 C 1152%2c206.8 1344%2c462.8 1440%2c532L1440 560L0 560z' fill='rgba(54%2c 116%2c 181%2c 1)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1098'%3e%3crect width='1440' height='560' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
-    /* background: radial-gradient(125% 125% at 50% 10%, #ffffff 40%, rgb(0, 38, 255) 100%); */
+  min-height: 100vh;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1440' height='560' preserveAspectRatio='none' viewBox='0 0 1440 560'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1098%26quot%3b)' fill='none'%3e%3crect width='1440' height='560' x='0' y='0' fill='rgba(161%2c 227%2c 249%2c 1)'%3e%3c/rect%3e%3cpath d='M 0%2c7 C 57.6%2c63.4 172.8%2c253.4 288%2c289 C 403.2%2c324.6 460.8%2c158.4 576%2c185 C 691.2%2c211.6 748.8%2c423.2 864%2c422 C 979.2%2c420.8 1036.8%2c201.4 1152%2c179 C 1267.2%2c156.6 1382.4%2c283.8 1440%2c310L1440 560L0 560z' fill='rgba(87%2c 143%2c 202%2c 1)'%3e%3c/path%3e%3cpath d='M 0%2c233 C 96%2c272 288%2c437.4 480%2c428 C 672%2c418.6 768%2c165.2 960%2c186 C 1152%2c206.8 1344%2c462.8 1440%2c532L1440 560L0 560z' fill='rgba(54%2c 116%2c 181%2c 1)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1098'%3e%3crect width='1440' height='560' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+  /* background: radial-gradient(125% 125% at 50% 10%, #ffffff 40%, rgb(0, 38, 255) 100%); */
 }
 
-.bg-custom-radial-dashboard{
-    min-height: 100vh;
-    height: 100%;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-attachment: fixed;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1920' height='1080' preserveAspectRatio='none' viewBox='0 0 1920 1080'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1000%26quot%3b)' fill='none'%3e%3crect width='1920' height='1080' x='0' y='0' fill='rgba(54%2c 116%2c 181%2c 1)'%3e%3c/rect%3e%3cpath d='M 0%2c333 C 76.8%2c470 230.4%2c1002.2 384%2c1018 C 537.6%2c1033.8 614.4%2c498 768%2c412 C 921.6%2c326 998.4%2c578 1152%2c588 C 1305.6%2c598 1382.4%2c444.2 1536%2c462 C 1689.6%2c479.8 1843.2%2c634 1920%2c677L1920 1080L0 1080z' fill='rgba(104%2c 177%2c 255%2c 1)'%3e%3c/path%3e%3cpath d='M 0%2c364 C 128%2c461 384%2c857.4 640%2c849 C 896%2c840.6 1024%2c371 1280%2c322 C 1536%2c273 1792%2c547.6 1920%2c604L1920 1080L0 1080z' fill='rgba(151%2c 201%2c 255%2c 1)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1000'%3e%3crect width='1920' height='1080' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+.bg-custom-radial-dashboard {
+  min-height: 100vh;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1920' height='1080' preserveAspectRatio='none' viewBox='0 0 1920 1080'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1000%26quot%3b)' fill='none'%3e%3crect width='1920' height='1080' x='0' y='0' fill='rgba(54%2c 116%2c 181%2c 1)'%3e%3c/rect%3e%3cpath d='M 0%2c333 C 76.8%2c470 230.4%2c1002.2 384%2c1018 C 537.6%2c1033.8 614.4%2c498 768%2c412 C 921.6%2c326 998.4%2c578 1152%2c588 C 1305.6%2c598 1382.4%2c444.2 1536%2c462 C 1689.6%2c479.8 1843.2%2c634 1920%2c677L1920 1080L0 1080z' fill='rgba(104%2c 177%2c 255%2c 1)'%3e%3c/path%3e%3cpath d='M 0%2c364 C 128%2c461 384%2c857.4 640%2c849 C 896%2c840.6 1024%2c371 1280%2c322 C 1536%2c273 1792%2c547.6 1920%2c604L1920 1080L0 1080z' fill='rgba(151%2c 201%2c 255%2c 1)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1000'%3e%3crect width='1920' height='1080' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
 }
 
 .dark .bg-custom-radial-dashboard {
-    min-height: 100vh;
-    height: 100%;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-attachment: fixed;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1920' height='1080' preserveAspectRatio='none' viewBox='0 0 1920 1080'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1053%26quot%3b)' fill='none'%3e%3crect width='1920' height='1080' x='0' y='0' fill='rgba(0%2c 0%2c 0%2c 1)'%3e%3c/rect%3e%3cpath d='M 0%2c525 C 76.8%2c581 230.4%2c855.6 384%2c805 C 537.6%2c754.4 614.4%2c322 768%2c272 C 921.6%2c222 998.4%2c597.6 1152%2c555 C 1305.6%2c512.4 1382.4%2c-16 1536%2c59 C 1689.6%2c134 1843.2%2c755.8 1920%2c930L1920 1080L0 1080z' fill='rgba(14%2c 14%2c 14%2c 1)'%3e%3c/path%3e%3cpath d='M 0%2c1069 C 128%2c950.6 384%2c495.8 640%2c477 C 896%2c458.2 1024%2c1035.6 1280%2c975 C 1536%2c914.4 1792%2c334.2 1920%2c174L1920 1080L0 1080z' fill='rgba(12%2c 12%2c 12%2c 1)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1053'%3e%3crect width='1920' height='1080' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+  min-height: 100vh;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1920' height='1080' preserveAspectRatio='none' viewBox='0 0 1920 1080'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1053%26quot%3b)' fill='none'%3e%3crect width='1920' height='1080' x='0' y='0' fill='rgba(0%2c 0%2c 0%2c 1)'%3e%3c/rect%3e%3cpath d='M 0%2c525 C 76.8%2c581 230.4%2c855.6 384%2c805 C 537.6%2c754.4 614.4%2c322 768%2c272 C 921.6%2c222 998.4%2c597.6 1152%2c555 C 1305.6%2c512.4 1382.4%2c-16 1536%2c59 C 1689.6%2c134 1843.2%2c755.8 1920%2c930L1920 1080L0 1080z' fill='rgba(14%2c 14%2c 14%2c 1)'%3e%3c/path%3e%3cpath d='M 0%2c1069 C 128%2c950.6 384%2c495.8 640%2c477 C 896%2c458.2 1024%2c1035.6 1280%2c975 C 1536%2c914.4 1792%2c334.2 1920%2c174L1920 1080L0 1080z' fill='rgba(12%2c 12%2c 12%2c 1)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1053'%3e%3crect width='1920' height='1080' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
 }
 
 .roboto-light {
-    font-family: "Roboto", serif;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-    font-variation-settings: "wdth" 100;
+  font-family: "Roboto", serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
 }
 
 .roboto-regular {
-    font-family: "Roboto", serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-    font-variation-settings: "wdth" 100;
+  font-family: "Roboto", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
 }
 
 .roboto-bold {
-    font-family: "Roboto", serif;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
-    font-variation-settings: "wdth" 100;
+  font-family: "Roboto", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
 }
 
 .nunito-thin {
-    font-family: "Nunito", serif;
-    font-optical-sizing: auto;
-    font-weight: 100;
-    font-style: normal;
+  font-family: "Nunito", serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
 }
 
 .nunito-light {
-    font-family: "Nunito", serif;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
+  font-family: "Nunito", serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
 }
 
 .nunito-regular {
-    font-family: "Nunito", serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
+  font-family: "Nunito", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .nunito-bold {
-    font-family: "Nunito", serif;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
+  font-family: "Nunito", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
 }
 
 .glass {
-    background: rgba(255, 255, 255, 0.37);
-    border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(6.3px);
-    -webkit-backdrop-filter: blur(6.3px);
-    border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.37);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6.3px);
+  -webkit-backdrop-filter: blur(6.3px);
+  border: 1px solid rgba(255, 255, 255, 0.32);
 }
 
 
 
-  /* -----------------------------------------
+/* -----------------------------------------
     =CSS3 Loading animations
   -------------------------------------------- */
 
-  /* =Elements style
+/* =Elements style
   ---------------------- */
 
-  .ring-1 {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto;
-    padding: 10px;
-    border: 20px dashed #229cff;
-    border-radius: 100%;
-  }
-
-
-  .load-4 .ring-1 {
-    animation: loadingD 1.5s 0.3s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
-  }
-  .l-4 {
-    animation-delay: 0.84s;
-  }
-
-
-  @keyframes loadingD {
-    0 {
-      transform: rotate(0deg);
-    }
-    50% {
-      transform: rotate(180deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-
-  @layer base {
-  :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --primary: 0 0% 9%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
-        --sidebar-background: 0 0% 98%;
-        --sidebar-foreground: 240 5.3% 26.1%;
-        --sidebar-primary: 240 5.9% 10%;
-        --sidebar-primary-foreground: 0 0% 98%;
-        --sidebar-accent: 240 4.8% 95.9%;
-        --sidebar-accent-foreground: 240 5.9% 10%;
-        --sidebar-border: 220 13% 91%;
-        --sidebar-ring: 217.2 91.2% 59.8%;
-    }
-  .dark {
-        --background: 0 0% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 0 0% 14.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 14.9%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 14.9%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.9%;
-        --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-        --sidebar-background: 240 5.9% 10%;
-        --sidebar-foreground: 240 4.8% 95.9%;
-        --sidebar-primary: 224.3 76.3% 48%;
-        --sidebar-primary-foreground: 0 0% 100%;
-        --sidebar-accent: 240 3.7% 15.9%;
-        --sidebar-accent-foreground: 240 4.8% 95.9%;
-        --sidebar-border: 240 3.7% 15.9%;
-        --sidebar-ring: 217.2 91.2% 59.8%;
-    }
+.ring-1 {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  padding: 10px;
+  border: 20px dashed #3b4752;
+  border-radius: 100%;
 }
 
 
-  @layer base {
+.load-4 .ring-1 {
+  animation: loadingD 1.5s 0.3s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
+}
+
+.l-4 {
+  animation-delay: 0.84s;
+}
+
+
+@keyframes loadingD {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(180deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+
+@layer base {
   * {
     @apply border-border;
-    }
+  }
+
   body {
     @apply bg-background text-foreground;
-    }
+  }
 }
-
-
-
-
-

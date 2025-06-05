@@ -16,7 +16,7 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (Auth::check() && in_array(Auth::user()->qms_role, $roles)) {
+        if (Auth::guard('hris')->check() && in_array(Auth::guard('hris')->user()->qms_role, $roles)) {
             return $next($request);
         }
         return abort(403);

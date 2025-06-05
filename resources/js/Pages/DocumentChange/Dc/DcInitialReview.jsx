@@ -21,7 +21,6 @@ function DcInitialReview() {
     const spreadsheetRef = useRef(null);
     let editorObj = null;
     const [remarks, setRemarks] = useState('');
-    const { url } = usePage();
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [status, setStatus] = useState(1);
@@ -30,7 +29,7 @@ function DcInitialReview() {
 
     const user = usePage().props.auth.user;
     const avatarSrc = user.image_path
-        ? `http://hris.stii.local/frontend/hris/images/user_image/${user.image.path}`
+        ? `http://hris.stii.local/frontend/hris/images/user_image/${user.image_path}`
         : "/storage/images/user.png";
     let items = [
         "Comments", "Undo", "Redo", "Separator", "Image", "Table", "Header", "Footer", "Separator", "PageSetup", "PageNumber", "Break", "Separator", "Find"
@@ -55,7 +54,7 @@ function DcInitialReview() {
             res => {
                 setDocument(res.data.document);
                 setComments(res.data.comments)
-                setRemarks(res.data.remarks)
+                setRemarks(res.data.remarks.remarks)
             }
         )
     };
@@ -153,6 +152,8 @@ function DcInitialReview() {
         formData.append('last_revision_no', document.latest_revision.version_no);
         formData.append('document_id', document.document_id);
         formData.append('email', document.latest_revision.email);
+        formData.append('is_qmr', document.latest_revision.is_qmr);
+
         sendFormData(formData);
     }
 
@@ -228,8 +229,7 @@ function DcInitialReview() {
             formData.append('document_id', document.document_id);
             formData.append('document_dir', document.latest_revision.document_dir);
             formData.append('email', document.latest_revision.email);
-
-
+            formData.append('is_qmr', document.latest_revision.is_qmr);
             const blob = await editorObj.documentEditor.saveAsBlob('Docx');
             formData.append('file', blob, 'document.docx');
             sendFormData(formData);
@@ -302,7 +302,7 @@ function DcInitialReview() {
                     <section className="relative w-full  text-gray-800 dark:text-gray-50 rounded-lg">
                         {document.latest_revision?.file_type === 1 ? (
                             <div className='w-full rounded-lg overflow-hidden shadow-xl bg-gray-50 dark:bg-gray-800'>
-                                <DocumentEditorContainerComponent height={'90vh'} 
+                                <DocumentEditorContainerComponent height={'90vh'}
                                     serviceUrl="https://localhost:7087/api/documenteditor/"
                                     ref={(ins => editorObj = ins)}
                                     toolbarItems={items}

@@ -8,7 +8,7 @@ const FileUpload = ({
     className,
     title = "",
     subtitle = "",
-    fileName="",
+    fileName = "",
     ...props
 }) => {
     const fileInputRef = useRef(null);
@@ -24,12 +24,13 @@ const FileUpload = ({
                     <p className="mb-2 text-sm text-gray-800 dark:text-gray-400 font-semibold">
                         {title}
                     </p>
-                    <p className="text-xs text-gray-800 dark:text-gray-400">{subtitle}</p>
-                </div>) :  (<div className="flex flex-col items-center justify-center pb-6 pt-5 px-2">
-                    <FaFileAlt  size={'50'} />
+                    <p className="text-xs text-gray-400 dark:text-gray-400">{subtitle}</p>
+                </div>) : (<div className="flex flex-col items-center justify-center pb-6 pt-5 px-2">
+                    <FaFileAlt size={'50'} />
                     <p className="mt-2 text-sm text-gray-800 dark:text-gray-400 font-semibold text-center">
                         {fileName}
                     </p>
+                    <p className="text-xs text-gray-400 dark:text-gray-200">{subtitle}</p>
                 </div>)
                 }
                 <FileInput id="dropzone-file" ref={fileInputRef} className="hidden" {...props} />

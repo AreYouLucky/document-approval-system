@@ -3,11 +3,11 @@ import DataTable from '@/Components/displays/DataTable';
 import PrimaryButton from '@/Components/Forms/PrimaryButton';
 import { useState, useEffect } from 'react';
 import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
-import { HiClock } from "react-icons/hi";
-import { Badge } from "flowbite-react";
 import { router } from "@inertiajs/react"
 import QMRDocumentTabs from '../Layouts/QMRDocumentTabs';
 import DocumentReviewLogs from '@/Pages/Public/DocumentReviewLogs';
+import MoreActions from '../../All/Partials/MoreActions';
+import {Head} from '@inertiajs/react';
 
 export default function ForReviewList() {
     const [data, setData] = useState(
@@ -127,6 +127,8 @@ export default function ForReviewList() {
 
     return (
         <QMRDocumentTabs>
+            <Head title="Review Request List" />
+
             <div className=' text-gray-900 dark:text-gray-50 w-full rounded-lg'>
                 <div className='w-full flex  flex-wrap justify-between align-middle mb-4'>
                     <div>
@@ -164,13 +166,13 @@ export default function ForReviewList() {
                                 <td className="px-6 py-4 text-center">
                                     {process_type.find(pt => Number(pt.value) === Number(item.process_type))?.name || "Unknown Process"}
                                 </td>
-                                <td className="px-6 py-4 flex justify-center align-middle">
-                                    {item.document_type }
+                                <td className="px-6 py-4 ">
+                                    {item.document_type}
                                 </td>
-                                <td className="text-center space-x-2">
+
+                                <td className="text-center flex justify-center item-center py-1">
                                     <PrimaryButton className="px-2 py-1 text-xs bg-blue-500 text-white" onClick={() => { router.visit('/qmr/view-document/' + item.document_id) }}>Review</PrimaryButton>
-                                    <PrimaryButton className="px-2 py-1 text-xs bg-blue-500 text-white " onClick={() => viewDocument(item.revision_id)}>View</PrimaryButton>
-                                    <PrimaryButton className="px-2 py-1 text-xs bg-blue-500 text-white" onClick={() => openReviewDialog(item.document_id)}>Logs</PrimaryButton>
+                                    <MoreActions item={item} />
                                 </td>
                             </tr>
                         ))

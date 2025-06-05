@@ -19,9 +19,9 @@ function SuccessDialogs({ show, onClose, message = "", link = "" }) {
                                 <span className="roboto-regular text-lg">{message}</span>
 
                             </div>
-                            <div className="mt-4 flex justify-center">
+                            <div className="mt-4 flex justify-center text-gray-800 dark:text-gray-50">
                                 {link === '' ?
-                                    <PrimaryButton onClick={onClose} className="rounded-lg bg-red-400">
+                                    <PrimaryButton onClick={onClose} className="rounded-lg bg-blue-400">
                                         Close
                                     </PrimaryButton> :
                                     <Link href={link} className="rounded-lg px-5 py-2 border text-sm bg-gray-50 border-slate-400">

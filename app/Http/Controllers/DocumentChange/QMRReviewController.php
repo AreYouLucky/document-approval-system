@@ -22,10 +22,16 @@ class QMRReviewController extends Controller
 
     public function documentListCount()
     {
+        $user = Auth::guard('hris')->user();
+        $is_qmr = 0;
+        if ($user->qms_role == 'Top Management') {
+            $is_qmr = 1;
+        }
         $counts = DB::table('document_revisions')
             ->join('documents', 'document_revisions.document_id', '=', 'documents.document_id')
             ->select('progress_status', DB::raw('count(*) as total'))
             ->whereRaw('document_revisions.revision_id = (SELECT MAX(revision_id) FROM document_revisions WHERE document_id = documents.document_id)')
+            ->where('is_qmr', $is_qmr)
             ->groupBy('progress_status')
             ->get();
 
@@ -50,25 +56,30 @@ class QMRReviewController extends Controller
         return $data;
     }
 
-    public function ViewQMRReview(String $id)
+    public function ViewQMRReview(String $id , string $type)
     {
         try {
             $decrypted = Crypt::decrypt($id);
             $status = Document::where('document_id', $decrypted)->first();
             if ($status) {
                 $credentials = [
-                    'username' => 'qmr',
-                    'password' => 'aa',
+                    'username' => $type == '0' ? env('qmr_user') : env('tm_user'),
+                    'password' => $type == '0' ? env('qmr_pass') : env('tm_pass'),
                 ];
-                if (Auth::attempt($credentials)) {
-                    if (Auth::user()->qms_role == 'QMR') {
-                        return Inertia::render('DocumentChange/QMR/LoginCode');
+
+                if (Auth::guard('hris')->attempt($credentials)) {
+                    if (Auth::guard('hris')->user()) {
+                        return Inertia::render('Auth/LoginCode');
                     }
-                    return abort(403);
+                    return abort(402);
                 };
             }
         } catch (\Exception $e) {
-            return abort(404);
+            return response()->json(
+                [
+                    'error' => $e->getMessage()
+                ]
+            );
         }
     }
 
@@ -128,12 +139,6 @@ class QMRReviewController extends Controller
             'comments' => $comments,
             'document' => $document,
         ]);
-
-        // return Document::where('is_final', 0)
-        //     ->where('document_id', $decrypted_id)
-        //     ->with('latestRevision')
-        //     ->orderBy('created_at')
-        //     ->first();
     }
 
 
@@ -141,7 +146,7 @@ class QMRReviewController extends Controller
     {
         try {
             DB::beginTransaction();
-            $user = Auth::user();
+            $user = Auth::guard('hris')->user();
             $document_revision = DocumentRevision::find($request->revision_id);
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
@@ -149,21 +154,26 @@ class QMRReviewController extends Controller
             }
 
 
+            if ($request->is_qmr == 1) {
+                $name = 'Top management';
+            } else {
+                $name = 'QMR';
+            }
             if ($request->status == 1) {
                 $status = 'Approved(redirect to final review)';
                 $document_revision->progress_status = 5;
                 $document_revision->effectivity_date = now();
                 $document_revision->is_new_version = 1;
                 $document_revision->version_no = $document_revision->version_no + 1;
-                $msg = "Your document change request for \"" . $request->title . "\", Revision No. " . $request->last_revision_no . ", has been reviewed and approved by the QMR. Please wait for Document Custodian to update the status of your request.";
+                $msg = "Your document change request for \"" . $request->title . "\", Revision No. " . $request->last_revision_no . ", has been reviewed and approved by the " . $name . ". Please wait for Document Custodian to update the status of your request.";
             } else if ($request->status == 2) {
                 $status = 'For Revision(redirect back to process owner)';
                 $document_revision->progress_status = 4;
-                $msg = "Your document change request for \"" . $request->title . "\", Revision No. " . $request->last_revision_no . ", requires revisions based on the review by the QMR. Please make the necessary changes in the QMS Portal.";
+                $msg = "Your document change request for \"" . $request->title . "\", Revision No. " . $request->last_revision_no . ", requires revisions based on the review by the " . $name . ". Please make the necessary changes in the QMS Portal.";
             } else {
                 $status = 'Rejected(redirect back to process owner)';
                 $document_revision->progress_status = 6;
-                $msg = "Your document change request for \"" . $request->title . "\", Revision No. " . $request->last_revision_no . ", has been reviewed and rejected by the QMR. Please check the documents logs in the qms portal for further details.";
+                $msg = "Your document change request for \"" . $request->title . "\", Revision No. " . $request->last_revision_no . ", has been reviewed and rejected by the " . $name . ". Please check the documents logs in the qms portal for further details.";
             }
             $document_revision->save();
 
@@ -232,7 +242,11 @@ class QMRReviewController extends Controller
                     'position' => $user->position,
                     'link' => url('/dc/final-review-document/' . $encryptedId)
                 ];
-                Mail::to('johncagadas29@gmail.com')->send(new SendMail($details));
+
+                $subject = $request->title . ' - QMS Document Final Review';
+                $email1 = env('dc_email1');
+                $email2 = env('dc_email2');
+                Mail::to([$email1, $email2])->send(new SendMail($details, $subject));
             }
 
             $details = [

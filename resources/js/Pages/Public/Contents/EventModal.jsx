@@ -1,10 +1,11 @@
-import React, { memo, useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import Modal from "@/Components/Forms/Modal";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 
 const EventModal = ({ show, onClose, data }) => {
     const modalRef = useRef(null);
+    const [thumbnailPosition, setThumbnailPosition] = useState("left");
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -22,29 +23,43 @@ const EventModal = ({ show, onClose, data }) => {
         };
     }, [show, onClose]);
 
+    useEffect(() => {
+        const updateThumbnailPosition = () => {
+            const isMobile = window.innerWidth < 768;
+            setThumbnailPosition(isMobile ? "bottom" : "left");
+        };
+
+        updateThumbnailPosition();
+        window.addEventListener("resize", updateThumbnailPosition);
+        return () => window.removeEventListener("resize", updateThumbnailPosition);
+    }, []);
+
     const imageNames = ['a.jpg', 'b.jpg', 'c.jpg', 'd.jpg', 'e.jpg', 'f.jpg', 'g.jpg', 'h.jpg', 'i.jpg', 'j.jpg', 'k.jpg'];
 
     const images = imageNames.map((img) => ({
         original: `/storage/images/events/${data.title}/${img}`,
         thumbnail: `/storage/images/events/${data.title}/${img}`,
-        originalHeight: '400px',
     }));
 
     return (
         <Modal show={show} onClose={onClose} maxWidth="4xl">
             <div
                 ref={modalRef}
-                className=" bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50 rounded-xl transition-transform p-2 relative"
+                className=" bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50 rounded-xl transition-transform md:p-2 relative"
             >
-                <div className="flex flex-col items-center px-10 pb-2 pt-7">
-                    <ImageGallery
-                        items={images}
-                        loading="lazy"
-                        showNav={false}
-                        thumbnailPosition="left"
-                        slideInterval={6000}
-                        autoPlay
-                    />
+                <div className="flex flex-col items-center md:px-10 pb-2 md:pt-7">
+                    <div className="custom-gallery-wrapper w-full max-h-[70vh] overflow-y-auto p-2">
+                        <ImageGallery
+                            items={images}
+                            loading="lazy"
+                            showNav={false}
+                            thumbnailPosition={thumbnailPosition}
+                            slideInterval={6000}
+                            autoPlay
+                            additionalClass="custom-gallery"
+                            className="w-full"
+                        />
+                    </div>
                 </div>
                 <div className="w-full  bg-gray-100 dark:bg-gray-800 rounded-b-lg relative px-10 py-4">
                     <div className="py-5 px-2">

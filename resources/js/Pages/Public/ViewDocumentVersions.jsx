@@ -6,6 +6,7 @@ import InputLabel from "@/Components/Forms/InputLabel";
 import SelectInput from "@/Components/Forms/SelectInput";
 import axios from 'axios';
 import VersionLogs from './Partials/VersionLogs';
+import { Head } from '@inertiajs/react';
 
 function ViewDocumentVersions() {
     const [data, setData] = useState([]);
@@ -57,12 +58,39 @@ function ViewDocumentVersions() {
         const selectedVersion = e.target.value;
         const selected = data.find(d => d.version_no == selectedVersion);
         setCurrentData(selected);
-        getVersionLogs(documentId, selectedVersion)
+        getVersionLogs(documentId, selected.revision_id)
     };
+
+    const handleDownloadWithStamp = async () => {
+        const url = `/storage/iso_documents/${currentData.pdf_dir}`;
+        const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
+
+        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+        const pages = pdfDoc.getPages();
+
+        pages.forEach((page) => {
+            page.drawText('CONTROLLED COPY', {
+                x: 50,
+                y: 50,
+                size: 24,
+                color: rgb(1, 0, 0),
+                opacity: 0.5,
+            });
+        });
+
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = currentData.pdf_dir;
+        link.click();
+    };
+
 
 
     return (
         <AuthenticatedLayout>
+            <Head title={currentData.title} />
             <div className='w-full p-4'>
                 <BreadCrumbs tab={tabs} className="mb-2" />
                 <div className="w-full md:grid lg:grid-cols-4 md:grid-cols-3 gap-4 flex flex-col-reverse">
@@ -100,6 +128,8 @@ function ViewDocumentVersions() {
                                     <p><strong>Reasons:</strong> {currentData.reasons}</p>
                                 </div>
                             )}
+                            <button onClick={handleDownloadWithStamp} className='bg-blue-500 text-white p-2 rounded-lg mt-3 border'>Download a Copy</button>
+
                         </div>
                         <div className='py-2 w-full mt-1 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-lg border text-gray-800 dark:text-gray-50 roboto-thin'>
                             <div className='w-full pt-4'>

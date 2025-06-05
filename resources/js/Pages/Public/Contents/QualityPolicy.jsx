@@ -2,8 +2,8 @@ import React from 'react'
 
 function QualityPolicy() {
     return (
-        <div className='w-full   dark:text-gray-100 md:py-8 py-6 px-10 rounded-lg text-gray-800 '  >
-            <h2 className='text-center text-2xl roboto-bold pb-2'>
+        <div className='w-full   dark:text-gray-100 md:py-8 py-10 md:px-10 px-8 rounded-lg text-gray-800 leading-loose'  >
+            <h2 className='text-center md:text-3xl text-2xl roboto-bold md:pb-5 pb-2'>
                 Quality Policy
             </h2>
             <p className='text-justify roboto-thin '>
@@ -20,8 +20,8 @@ function QualityPolicy() {
                         ['COLLABORATION', 'Engages competent people to achieve common goals and advance S&T progress'],
                         ['EXCELLENCE', 'Fosters a culture of achievement and improved performance to attain the highest level of client satisfaction']
                     ].map(([title, description], idx) => (
-                        <tr key={title} className={`${idx === 0 ? 'mt-0' : 'mt-1'} gap-4 pl-6  `}>
-                            <td className="roboto-bold text-red-500 text-lg pr-4 align-center text-end">{title}</td>
+                        <tr key={title} className={`${idx === 0 ? 'mt-0' : 'mt-1'} gap-4 md:pl-6 pl-2  `}>
+                            <td className="roboto-bold text-red-500 md:text-lg text-sm pr-4 align-center text-end">{title}</td>
                             <td className='text-gray-700 dark:text-gray-50'>{description}</td>
                         </tr>
                     ))}

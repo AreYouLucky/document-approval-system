@@ -31,7 +31,7 @@ function DcInitialReview() {
 
     const user = usePage().props.auth.user;
     const avatarSrc = user.image_path
-        ? `http://hris.stii.local/frontend/hris/images/user_image/${user.image.path}`
+        ? `http://hris.stii.local/frontend/hris/images/user_image/${user.image_path}`
         : "/storage/images/user.png";
     let items = [
         "Comments", "Undo", "Redo", "Separator", "Image", "Table", "Header", "Footer", "Separator", "PageSetup", "PageNumber", "Break", "Separator", "Find"

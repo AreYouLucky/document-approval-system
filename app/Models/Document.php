@@ -11,7 +11,8 @@ class Document extends Model
     protected $fillable = [
         'code',
         'division',
-        'text_conversion'
+        'text_conversion',
+        'section'
     ];
 
 

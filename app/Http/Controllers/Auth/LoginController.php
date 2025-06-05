@@ -22,9 +22,20 @@ class LoginController extends Controller
         //     ]);
         // }
 
-        if(Auth::attempt($credentials)){
-                 return Auth::user();
-        };
+        try {
+            if (Auth::guard('hris')->attempt($credentials)) {
+                return Auth::guard('hris')->user();
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+
+        // if(Auth::attempt($credentials)){
+        //          return Auth::user();
+        // };
 
         return response()->json([
             'errors' => [

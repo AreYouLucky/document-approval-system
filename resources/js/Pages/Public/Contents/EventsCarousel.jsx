@@ -3,8 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
-import { EffectCoverflow, Pagination, Autoplay } from 'swiper/modules';
-import { keyDownEvent } from '@syncfusion/ej2-react-documenteditor';
+import {Pagination, Autoplay } from 'swiper/modules';
 import EventCard from '../Partials/EventCard';
 
 

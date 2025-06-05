@@ -3,21 +3,12 @@ import DataTable from '@/Components/displays/DataTable';
 import PrimaryButton from '@/Components/Forms/PrimaryButton';
 import { useState, useEffect } from 'react';
 import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
-import { HiClock } from "react-icons/hi";
-import { Badge } from "flowbite-react";
+import {Head} from '@inertiajs/react';
 import { router } from "@inertiajs/react";
 import DcDocumentTabs from '../Layouts/DcDocumentTabs';
-import DocumentReviewLogs from '@/Pages/Public/DocumentReviewLogs';
+import MoreActions from '../../All/Partials/MoreActions';
 
 export default function DcFinalReviewList() {
-    const [data, setData] = useState(
-        {
-            id: '',
-            full_name: '',
-            role: '',
-            image_path: ''
-        })
-
     const process_type = [
         { name: "NEW", value: 1 },
         { name: "REVISION", value: 2 },
@@ -29,8 +20,6 @@ export default function DcFinalReviewList() {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-    const [id, setId] = useState();
-    const [isReviewDialogOpen, setReviewDialogOpen] = useState(false);
 
     const [loading, setLoading] = useState(false);
     const headers = [{
@@ -46,7 +35,7 @@ export default function DcFinalReviewList() {
         position: 'center'
     },
     {
-        name: "Progress",
+        name: "Document Type",
         position: 'center'
     },
     {
@@ -70,13 +59,6 @@ export default function DcFinalReviewList() {
         PaginateDocuments()
     }, [documents])
 
-    const openReviewDialog = (id) =>{
-        setId(id);
-        setReviewDialogOpen(true)
-    }
-    const viewDocument = (id) => {
-        router.visit('/view-document/'+id)
-    }
     const fetchDocuments = () => {
         setLoading(true)
         axios.get('/dc/load-final-review-documents').then(
@@ -128,6 +110,8 @@ export default function DcFinalReviewList() {
 
     return (
         <DcDocumentTabs>
+            <Head title="Final Review List" />
+
             <div className='text-gray-900 dark:text-gray-50 w-full rounded-lg'>
                 <div className='w-full flex  flex-wrap justify-between align-middle mb-4'>
                     <div>
@@ -165,17 +149,12 @@ export default function DcFinalReviewList() {
                                 <td className="px-6 py-4 text-center">
                                     {process_type.find(pt => Number(pt.value) === Number(item.process_type))?.name || "Unknown Process"}
                                 </td>
-                                <td className="px-6 py-4 flex justify-center align-middle">
-                                    {Number(item.is_final) === 0 && Number(item.progress_status) === 5 ? (
-                                        <> <Badge className='bg-blue-100 dark:bg-blue-500 dark:text-gray-50' icon={HiClock} >
-                                            Final Review
-                                        </Badge></>
-                                    ) : null}
+                                <td className="text-center">
+                                    {item.document_type}
                                 </td>
-                                <td className=" text-center space-x-2">
-                                    <PrimaryButton className="px-2 py-1 text-xs bg-blue-500 text-white" onClick={() => { router.visit('/dc/final-review-document/' + item.document_id) }}>Review</PrimaryButton>
-                                    <PrimaryButton className="px-2 py-1 text-xs bg-blue-500 text-white " onClick={() => viewDocument(item.revision_id)}>View</PrimaryButton>
-                                    <PrimaryButton className="px-2 py-1 text-xs bg-blue-500 text-white" onClick={() => openReviewDialog(item.document_id)}>Logs</PrimaryButton>
+                                <td className=" flex justify-center items-center py-1">
+                                    <PrimaryButton className="px-2 py-1 text-xs bg-blue-500 text-white" onClick={() => { router.visit('/dc/final-review-document-auth/' + item.document_id) }}>Review</PrimaryButton>
+                                    <MoreActions item={item} />
                                 </td>
                             </tr>
                         ))
@@ -225,7 +204,6 @@ export default function DcFinalReviewList() {
                     </div>
                 </div>
             </div>
-            <DocumentReviewLogs show={isReviewDialogOpen} onClose={()=>setReviewDialogOpen(false)} id={id} />
         </DcDocumentTabs>
     );
 }

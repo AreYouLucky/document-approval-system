@@ -3,20 +3,12 @@ import DataTable from '@/Components/displays/DataTable';
 import PrimaryButton from '@/Components/Forms/PrimaryButton';
 import { useState, useEffect } from 'react';
 import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
-import { HiClock } from "react-icons/hi";
-import { Badge } from "flowbite-react";
+import {Head , usePage} from '@inertiajs/react';
 import { router } from "@inertiajs/react"
 import DcDocumentTabs from '../Layouts/DcDocumentTabs';
-import DocumentReviewLogs from '@/Pages/Public/DocumentReviewLogs';
+import MoreActions from '../../All/Partials/MoreActions';
 
 export default function DcInitialReviewList() {
-    const [data, setData] = useState(
-        {
-            id: '',
-            full_name: '',
-            role: '',
-            image_path: ''
-        })
 
     const process_type = [
         { name: "NEW", value: 1 },
@@ -29,8 +21,6 @@ export default function DcInitialReviewList() {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-    const [id, setId] = useState();
-    const [isReviewDialogOpen, setReviewDialogOpen] = useState(false);
 
     const [loading, setLoading] = useState(false);
     const headers = [{
@@ -39,14 +29,14 @@ export default function DcInitialReviewList() {
     },
     {
         name: "Title",
-        position: 'start'
+        position: 'center'
     },
     {
         name: "Process Type",
         position: 'center'
     },
     {
-        name: "Progress",
+        name: "Current Version",
         position: 'center'
     },
     {
@@ -80,10 +70,6 @@ export default function DcInitialReviewList() {
             }
         )
     };
-    const openReviewDialog = (id) =>{
-        setId(id);
-        setReviewDialogOpen(true)
-    }
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
         setCurrentPage(1);
@@ -120,13 +106,11 @@ export default function DcInitialReviewList() {
             setCurrentPage((prev) => prev - 1);
         }
     };
-    const viewDocument = (id) => {
-        router.visit('/view-document/'+id)
-    }
-
 
     return (
-        <DcDocumentTabs>
+        <DcDocumentTabs >
+            <Head title="Initial Review List" />
+
             <div className=' text-gray-900 dark:text-gray-50 w-full rounded-lg'>
                 <div className='w-full flex  flex-wrap justify-between align-middle mb-4'>
                     <div>
@@ -164,24 +148,12 @@ export default function DcInitialReviewList() {
                                 <td className="px-6 py-4 text-center">
                                     {process_type.find(pt => Number(pt.value) === Number(item.process_type))?.name || "Unknown Process"}
                                 </td>
-                                <td className="px-6 py-4 flex justify-center align-middle">
-                                    {Number(item.is_final) === 0 && Number(item.progress_status) === 0 ? (
-                                        <> <Badge className='bg-blue-100 dark:bg-blue-500 dark:text-gray-50' icon={HiClock} >
-                                            DC Initial Review
-                                        </Badge></>
-                                    ) : Number(item.is_final) === 0 && Number(item.progress_status) === 1 ? (
-                                        <>  <Badge className='bg-blue-100 dark:bg-blue-500 dark:text-gray-50 w-fit text-center' icon={HiClock} >
-                                            QMR Review
-                                        </Badge></>
-                                    ) : Number(item.is_final) === 0 && Number(item.progress_status) === 2 ? (
-                                        <>  <Badge className='bg-blue-100 dark:bg-blue-500 dark:text-gray-50 w-fit text-center' icon={HiClock}>
-                                            DC Final Review
-                                        </Badge></>) : null}
-                                </td>
                                 <td className="text-center">
-                                    <PrimaryButton className="m-1 px-2 py-1 text-xs bg-blue-500 text-white" onClick={() => { router.visit('/dc/view-document/' + item.document_id) }}>Review</PrimaryButton>
-                                    <PrimaryButton className="m-1 px-2 py-1 text-xs bg-blue-500 text-white " onClick={()=>viewDocument(item.revision_id)}>View</PrimaryButton>
-                                    <PrimaryButton className="m-1 px-2 py-1 text-xs bg-blue-500 text-white" onClick={()=>openReviewDialog(item.document_id)}>Logs</PrimaryButton>
+                                    {item.version_no}
+                                </td>
+                                <td className="text-center flex justify-center item-center py-1">
+                                    <PrimaryButton className=" py-1 px-2 text-xs bg-blue-500 text-white" onClick={() => { router.visit('/dc/view-document/' + item.document_id) }}>Review</PrimaryButton>
+                                    <MoreActions item={item}/>
                                 </td>
                             </tr>
                         ))
@@ -231,7 +203,6 @@ export default function DcInitialReviewList() {
                     </div>
                 </div>
             </div>
-            <DocumentReviewLogs show={isReviewDialogOpen} onClose={()=>setReviewDialogOpen(false)} id={id} />
         </DcDocumentTabs>
     );
 }

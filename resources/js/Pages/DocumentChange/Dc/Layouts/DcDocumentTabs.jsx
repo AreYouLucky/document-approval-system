@@ -31,7 +31,7 @@ export default function DcDocumentTabs({ children }) {
     const on = " rounded-t-lg border-b-2 border-blue-400 text-blue-600 dark:border-blue-500 dark:text-blue-500 font-bolder ";
     const off = " border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 "
     return (
-        <AuthenticatedLayout
+        <AuthenticatedLayout 
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
                     Document List

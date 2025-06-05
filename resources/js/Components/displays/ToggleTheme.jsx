@@ -11,6 +11,8 @@ export default function ToggleTheme({ darkMode, setDarkMode, className = "" }) {
             >
                 {darkMode ? <HiMoon className="w-6 h-6" />  : <HiSun className="w-6 h-6 " />}
             </button>
+
+
         </div>
     );
 }
