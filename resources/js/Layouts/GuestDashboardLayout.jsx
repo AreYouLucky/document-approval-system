@@ -14,10 +14,7 @@ import { GrDashboard } from 'react-icons/gr';
 function GuestDashboardLayout({ children }) {
     const [isOpen, setIsOpen] = useState(false);
     const { url } = usePage();
-    const [darkMode, setDarkMode] = useState(() => {
-        const storedTheme = localStorage.getItem("theme");
-        return storedTheme ? storedTheme === "dark" : true;
-    });
+    const [darkMode, setDarkMode] = useState(false);
 
 
 

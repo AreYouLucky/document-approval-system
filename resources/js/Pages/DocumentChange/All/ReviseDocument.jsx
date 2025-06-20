@@ -8,11 +8,11 @@ import InputError from '@/Components/Forms/InputError';
 import SelectInput from '@/Components/Forms/SelectInput';
 import TextArea from '@/Components/Forms/TextArea';
 import FileUpload from '@/Components/Forms/FileUpload';
-import DocumentUploadAlert from '../Public/DocumentUploadAlert';
+import DocumentUploadAlert from './DocumentUploadAlert';
 import PrimaryButton from '@/Components/Forms/PrimaryButton';
 import { MdDataSaverOn } from "react-icons/md";
 import SuccessDialogs from '@/Components/Toasts/SuccessDialogs';
-import EmptyDocuments from '../Public/EmptyDocuments';
+import EmptyDocuments from './EmptyDocuments';
 import { DocumentEditorContainerComponent, Toolbar, Inject } from '@syncfusion/ej2-react-documenteditor';
 import { SpreadsheetComponent } from '@syncfusion/ej2-react-spreadsheet';
 import axios from 'axios';
@@ -26,9 +26,10 @@ export default function ReviseDocument() {
   const [comments, setComments] = useState([]);
   const [remarks, setRemarks] = useState([]);
   const [isDownload, setIsDownload] = useState(0);
+  const [ip, setIp] = useState('');
   const user = usePage().props.auth.user;
   const avatarSrc = user.image_path
-    ? `http://hris.stii.local/frontend/hris/images/user_image/${user.image.path}`
+    ? `http://hris.stii.local/frontend/hris/images/user_image/${user.image_path}`
     : "/storage/images/user.png";
   let items = [
     "Comments",
@@ -77,7 +78,13 @@ export default function ReviseDocument() {
     setDialogOpen(true)
   }
   useEffect(() => {
-    getDocument();
+    axios.get('/api-ip').then(
+      res => {
+        setIp(res.data)
+        getDocument();
+      }
+    )
+
   }, [])
   const getDocument = () => {
     const urlParts = window.location.href.split("/");
@@ -109,8 +116,6 @@ export default function ReviseDocument() {
       if (!response.ok) throw new Error("File not found");
 
       const blob = await response.blob();
-
-      // Create a File object similar to e.target.files[0]
       const file = new File([blob], filename, { type: blob.type });
 
       const fileTypeMap = {
@@ -160,11 +165,7 @@ export default function ReviseDocument() {
   };
   const closeSuccessDialog = () => {
     setSuccessDialog(false);
-    if (user.qms_role === 'Process Owner') {
-      router.visit('/process/pending-list')
-    } else if (user.qms_role === 'Document Custodian') {
-      router.visit('/dc/view-documents')
-    }
+    router.visit('/process/pending-list')
   };
   const showSuccessDialog = () => {
     setSuccessDialog(true);
@@ -310,7 +311,7 @@ export default function ReviseDocument() {
     try {
       const response = await fetch('/storage/iso_documents/' + data.document_dir);
       const blob = await response.blob();
-      saveAs(blob, data.filename);
+      saveAs(blob, data.document_dir);
       setIsDownload(0);
     } catch (error) {
       console.error("Download failed:", error);
@@ -477,7 +478,7 @@ export default function ReviseDocument() {
                         <div className='p-5'>
                           <b>Remarks:</b> <span>{remarks.remarks}</span>
                         </div>
-                        <DocumentEditorContainerComponent height={'90vh'} serviceUrl="https://ej2services.syncfusion.com/production/web-services/api/documenteditor/"
+                        <DocumentEditorContainerComponent height={'90vh'} serviceUrl={`https://${ip}:7087/api/documenteditor/`}
                           ref={(ins => editorObj = ins)}
                           toolbarItems={items}
                           enableToolbar={true}
@@ -494,8 +495,8 @@ export default function ReviseDocument() {
                           <div className='col-span-3'>
                             <SpreadsheetComponent
                               ref={spreadsheetRef} height={'90vh'}
-                              openUrl="https://localhost:7086/api/Spreadsheet/Open"
-                              saveUrl='https://localhost:7086/api/Spreadsheet/Save'
+                              openUrl={`http://${ip}:7086/api/Spreadsheet/Open`}
+                              saveUrl={`http://${ip}:7086/api/Spreadsheet/Save`}
                               allowOpen={true}
                               allowSave={true}
                               beforeSave={beforeSave}
@@ -548,7 +549,7 @@ export default function ReviseDocument() {
                                   No available comments
                                 </span>
                               )}
-                            <button onClick={removeHighlight} className='p-2 bg-blue-500 text-gray-50 text-xs rounded-lg'>Remove Highlight</button>
+                              <button onClick={removeHighlight} className='p-2 bg-blue-500 text-gray-50 text-xs rounded-lg'>Remove Highlight</button>
                             </div>
                           </div>
                         </div>

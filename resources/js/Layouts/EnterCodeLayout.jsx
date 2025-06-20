@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { useLottie } from "lottie-react";
 
 export default function GuestLayout({ children }) {
     

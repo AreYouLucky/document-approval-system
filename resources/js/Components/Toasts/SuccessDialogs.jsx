@@ -24,7 +24,7 @@ function SuccessDialogs({ show, onClose, message = "", link = "" }) {
                                     <PrimaryButton onClick={onClose} className="rounded-lg bg-blue-400">
                                         Close
                                     </PrimaryButton> :
-                                    <Link href={link} className="rounded-lg px-5 py-2 border text-sm bg-gray-50 border-slate-400">
+                                    <Link href={link} className="rounded-lg px-5 py-2 border text-sm bg-gray-50 dark:bg-gray-600 border-slate-400">
                                         Close
                                     </Link>
                                 }

@@ -25,6 +25,7 @@ export default function DcFinalReview() {
         { name: "ISO Documents", url: "/dc/view-documents" },
         { name: "Document Custodian Final Review", url: "" },
     ];
+    const [ip, setIp] = useState('');
     const [document, setDocument] = useState({});
     const [file, setFile] = useState({});
     const [link, setLink] = useState('');
@@ -52,8 +53,14 @@ export default function DcFinalReview() {
         { name: "REVISION", value: 2 },
         { name: "DELETE", value: 3 },
     ];
+
     useEffect(() => {
-        getDocument();
+        axios.get('/api-ip').then(
+            res => {
+                setIp(res.data)
+                getDocument();
+            }
+        )
     }, [])
 
 
@@ -349,7 +356,6 @@ export default function DcFinalReview() {
 
     const submitFinalReview = (formData) => {
         setIsFinal(true)
-        console.log('heresss')
         axios.post('/dc/submit-final-review', formData).then(
             res => {
                 setSuccessDialog(true)
@@ -435,8 +441,8 @@ export default function DcFinalReview() {
                             <div className="overflow-hidden bg-white shadow-lg sm:rounded-lg md:col-span-3  h-fit">
                                 {document.latest_revision?.file_type === 1 ? (
                                     <div className='w-full'>
-                                        <DocumentEditorContainerComponent height={'95vh'}
-                                            serviceUrl="https://localhost:7087/api/documenteditor/"
+                                        <DocumentEditorContainerComponent height={'97vh'}
+                                            serviceUrl={`https://${ip}:7087/api/documenteditor/`}
                                             ref={(ins => editorObj = ins)}
                                             enableToolbar={true}
                                             showPropertiesPane={false}>
@@ -447,8 +453,8 @@ export default function DcFinalReview() {
                                     <div className='w-full'>
                                         <SpreadsheetComponent
                                             ref={spreadsheetRef} height={'97vh'}
-                                            openUrl="https://localhost:7086/api/Spreadsheet/Open"
-                                            saveUrl='https://localhost:7086/api/Spreadsheet/Save'
+                                            openUrl={`https://${ip}:7086/api/Spreadsheet/Open`}
+                                            saveUrl={`https://${ip}:7086/api/Spreadsheet/Save`}
                                             allowOpen={true}
                                             allowSave={true}
                                             beforeSave={beforeSave}
@@ -515,7 +521,7 @@ export default function DcFinalReview() {
                                                 checked={showUploadFields}
                                                 onChange={() => setShowUploadFields(!showUploadFields)}
                                             />
-                                            <span className="ms-2 text-xs  text-black ">
+                                            <span className="ms-2 text-xs  text-black dark:text-white ">
                                                 Re-upload pdf
                                             </span>
                                         </label>

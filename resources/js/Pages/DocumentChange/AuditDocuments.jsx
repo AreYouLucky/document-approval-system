@@ -23,8 +23,8 @@ function AuditDocuments() {
     const [comment, setComment] = useState([]);
     const user = usePage().props.auth.user; 
     const avatarSrc = user.image_path
-        ? `http://hris.stii.local/frontend/hris/images/user_image/${user.image.path}`
-        : "/storage/images/user.png";
+        ? `/storage/user_image/${user.image_path}`
+        : "/storage/images/unknown-user.png";
     let items = [
         "Comments",
     ];

@@ -16,7 +16,7 @@ export default function ViewDocument() {
     let items = [
         "Find"
     ];
-
+    const [ip, setIp] = useState('');
     const [document, setDocument] = useState({});
     const [url, setUrl] = useState('/document-list');
     const spreadsheetRef = useRef(null);
@@ -39,7 +39,12 @@ export default function ViewDocument() {
     ];
     let editorObj = null;
     useEffect(() => {
-        fetchDocument();
+        axios.get('/api-ip').then(
+            res => {
+                setIp(res.data)
+                fetchDocument();
+            }
+        )
 
         if (user.qms_role === 'Process Owner') {
             setUrl('/process/pending-list')
@@ -151,8 +156,8 @@ export default function ViewDocument() {
                         <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg md:col-span-3 ">
                             {document.file_type === 1 ? (
                                 <div className='w-full'>
-                                    <DocumentEditorContainerComponent height={'95vh'} 
-                                        serviceUrl="https://localhost:7087/api/documenteditor/"
+                                    <DocumentEditorContainerComponent height={'95vh'}
+                                        serviceUrl={`http://${ip}:7087/api/documenteditor/`}
                                         ref={(ins => editorObj = ins)}
                                         enableToolbar={true}
                                         toolbarItems={items}
@@ -164,8 +169,8 @@ export default function ViewDocument() {
                                 <div className='w-full'>
                                     <SpreadsheetComponent
                                         ref={spreadsheetRef} height={'95vh'}
-                                        allowEditing={false}
-                                        openUrl="https://localhost:7086/api/Spreadsheet/Open"
+                                        allowEditing={false}    
+                                        openUrl={`http://${ip}:7086/api/Spreadsheet/Open`}
                                         allowOpen={true}
                                     />
                                 </div>

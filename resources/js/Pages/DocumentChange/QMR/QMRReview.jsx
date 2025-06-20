@@ -22,6 +22,7 @@ function DcInitialReview() {
     const spreadsheetRef = useRef(null);
     let editorObj = null;
     const { url } = usePage();
+    const [ip, setIp] = useState('');
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [status, setStatus] = useState(1);
     const [comment, setComment] = useState('');
@@ -31,8 +32,8 @@ function DcInitialReview() {
 
     const user = usePage().props.auth.user;
     const avatarSrc = user.image_path
-        ? `http://hris.stii.local/frontend/hris/images/user_image/${user.image_path}`
-        : "/storage/images/user.png";
+        ? `/storage/user_image/${user.image_path}`
+        : "/storage/images/unknown-user.png";
     let items = [
         "Comments", "Undo", "Redo", "Separator", "Image", "Table", "Header", "Footer", "Separator", "PageSetup", "PageNumber", "Break", "Separator", "Find"
     ];
@@ -58,13 +59,17 @@ function DcInitialReview() {
             res => {
                 setDocument(res.data.document);
                 setComments(res.data.comments)
-                setRemarks(res.data.remarks.remarks)
+                setRemarks(res.data.remarks.remarks ?? '')
             }
         )
     };
-
     useEffect(() => {
-        getDocumentInformation();
+        axios.get('/api-ip').then(
+            res => {
+                setIp(res.data)
+                getDocumentInformation();
+            }
+        )
     }, [])
 
 
@@ -307,7 +312,7 @@ function DcInitialReview() {
                         {document.latest_revision?.file_type === 1 ? (
                             <div className='w-full rounded-lg overflow-hidden shadow-xl bg-gray-50 dark:bg-gray-800'>
                                 <DocumentEditorContainerComponent height={'90vh'}
-                                    serviceUrl="https://localhost:7087/api/documenteditor/"
+                                    serviceUrl={`http://${ip}:7087/api/documenteditor/`}
                                     ref={(ins => editorObj = ins)}
                                     toolbarItems={items}
                                     enableToolbar={true}
@@ -322,8 +327,8 @@ function DcInitialReview() {
                                 <div className='col-span-3'>
                                     <SpreadsheetComponent
                                         ref={spreadsheetRef} height={'90vh'}
-                                        openUrl="https://localhost:7086/api/Spreadsheet/Open"
-                                        saveUrl='https://localhost:7086/api/Spreadsheet/Save'
+                                        openUrl={`http://${ip}:7086/api/Spreadsheet/Open`}
+                                        saveUrl={`http://${ip}:7086/api/Spreadsheet/Save`}
                                         allowOpen={true}
                                         allowSave={true}
                                         beforeSave={beforeSave}

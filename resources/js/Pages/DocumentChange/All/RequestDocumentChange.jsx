@@ -23,6 +23,7 @@ export default function RequestDocumentchange() {
     let editorObj = null;
     const spreadsheetRef = useRef(null);
     const user = usePage().props.auth.user;
+    const [ip, setIp] = useState('');
     let items = ["Comments", "Undo", "Redo", "Separator", "Image", "Table", "Header", "Footer", "Separator", "PageSetup", "PageNumber", "Break", "Separator"];
     const [data, setData] = useState({ process_type: '', code: "", title: "", version: '', reasons: "", file: null, fileType: '', supporting_documents: '', document_type: '', filename: '' });
     const [errors, setErrors] = useState({});
@@ -32,16 +33,12 @@ export default function RequestDocumentchange() {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [isDownload, setIsDownload] = useState(0);
-    const lastQueried = useRef("");
-    const timer = useRef(null);
-    const controller = useRef(null);
     const [processing, setProcessing] = useState(false);
     const tabs = [
         { name: "ISO Document", url: "/process/view-documents" },
         { name: "Submit Request", url: "" },
     ];
     const process_type = [
-        { name: "NEW  (Add document to manual)", value: 1 },
         { name: "REVISION (Remove old document/ insert new document)", value: 2 },
         { name: "DELETE (Delete document from manual)", value: 3 },
     ];
@@ -59,11 +56,8 @@ export default function RequestDocumentchange() {
     }
     const closeSuccessDialog = () => {
         setSuccessDialog(false);
-        if (user.qms_role === 'Process Owner') {
-            router.visit('/process/pending-list')
-        } else if (user.qms_role === 'Document Custodian') {
-            router.visit('/dc/view-documents')
-        }
+        router.visit('/process/pending-list')
+
     };
     const showSuccessDialog = () => {
         setSuccessDialog(true);
@@ -105,24 +99,29 @@ export default function RequestDocumentchange() {
     useEffect(() => {
         const urlParts = window.location.href.split("/");
         const id = urlParts[urlParts.length - 1];
-        axios.get(`/get-document-by-code/` + id).then(res => {
-            if (res.data !== '') {
-                setData({
-                    ...data,
-                    title: res.data.title,
-                    version: res.data.version_no,
-                    reasons: res.data.reasons,
-                    supporting_documents: res.data.supporting_documents,
-                    document_type: res.data.document_type,
-                    fileType: res.data.fileType,
-                    filename: res.data.document_dir,
-                    code: id,
-                });
-                getFile(res.data.document_dir);
-                setFileName(res.data.title);
-                setIsDownload(1)
+        axios.get('/api-ip').then(
+            res => {
+                setIp(res.data)
+                axios.get(`/get-document-by-code/` + id).then(res => {
+                    if (res.data !== '') {
+                        setData({
+                            ...data,
+                            title: res.data.title,
+                            version: res.data.version_no,
+                            reasons: res.data.reasons,
+                            supporting_documents: res.data.supporting_documents,
+                            document_type: res.data.document_type,
+                            fileType: res.data.fileType,
+                            filename: res.data.document_dir,
+                            code: id,
+                        });
+                        getFile(res.data.document_dir);
+                        setFileName(res.data.title);
+                        setIsDownload(1)
+                    }
+                })
             }
-        })
+        )
 
     }, []);
 
@@ -391,7 +390,7 @@ export default function RequestDocumentchange() {
                                             <DocumentEditorContainerComponent
                                                 height="90vh"
                                                 style={{ width: '100%', overflow: 'hidden' }}
-                                                serviceUrl="https://localhost:7087/api/documenteditor/"
+                                                serviceUrl={`http://${ip}:7087/api/documenteditor/`}
                                                 ref={(ins) => (editorObj = ins)}
                                                 toolbarItems={items}
                                                 enableToolbar={true}
@@ -402,8 +401,8 @@ export default function RequestDocumentchange() {
                                         ) : (
                                             <SpreadsheetComponent
                                                 ref={spreadsheetRef}
-                                                openUrl="https://localhost:7086/api/Spreadsheet/Open"
-                                                saveUrl="https://localhost:7086/api/Spreadsheet/Save"
+                                                openUrl={`http://${ip}:7086/api/Spreadsheet/Open`}
+                                                saveUrl={`http://${ip}:7086/api/Spreadsheet/Save`}
                                                 allowOpen={true}
                                                 allowSave={true}
                                                 beforeSave={beforeSave}

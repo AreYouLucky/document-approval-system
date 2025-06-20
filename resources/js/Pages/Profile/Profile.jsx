@@ -5,9 +5,9 @@ import BreadCrumbs from '@/Components/displays/BreadCrumbs';
 
 export default function Dashboard() {
     const user = usePage().props.auth.user;
-    const avatarSrc = user.image_path
-        ? `http://hris.stii.local/frontend/hris/images/user_image/${user.image.path}`
-        : "/storage/images/user.png";
+const avatarSrc = user.image_path
+        ? `/storage/user_image/${user.image_path}`
+        : "/storage/images/unknown-user.png";
     const tabs = [
         { name: "Profile", url: "/users" },
     ];

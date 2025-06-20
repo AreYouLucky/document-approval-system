@@ -8,9 +8,7 @@ import { usePage } from '@inertiajs/react';
 export default function AuthenticatedLayout({ header, children }) {
     const [isOpen, setIsOpen] = useState(true);
     const { auth } = usePage().props;
-    const [darkMode, setDarkMode] = useState(() => {
-        return localStorage.getItem("theme") === "dark";
-    });
+    const [darkMode, setDarkMode] = useState(false);
 
     useEffect(() => {
         if (darkMode) {

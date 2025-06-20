@@ -24,18 +24,18 @@ class DocumentChangeController extends Controller
      */
     public function index()
     {
-        return Inertia::render('DocumentChange/Public/SubmitDocumentChange');
+        return Inertia::render('DocumentChange/All/SubmitDocumentChange');
     }
     public function store(Request $request)
     {
         $request->validate([
             'process_type' => 'required |numeric|max:100',
-            'code' => 'required |string|max:100|unique:documents,code',
+            'code' => 'required |string|max:100',
             'title' => 'required |string|max:255',
             'version' => 'required |numeric|max:50',
             'reasons' => 'required |string|max:255',
             'file' => 'required|mimes:xlsx,xls,doc,docx|max:2048',
-
+            'supporting_documents' => 'string| nullable'
         ]);
 
         if ($request->hasFile('file')) {
@@ -94,6 +94,7 @@ class DocumentChangeController extends Controller
                 'action_made' => 'uploaded document entitled ' . $request->title,
                 'affected_user' => 0
             ]);
+            $site_url = env('site_url');
 
             $encryptedId = Crypt::encrypt($document->document_id);
             $details = [
@@ -106,7 +107,7 @@ class DocumentChangeController extends Controller
                 ",
                 'sender' => $user->full_name,
                 'position' => $user->position,
-                'link' => 'http://127.0.0.1:8000/dc/review-document/' . $encryptedId
+                'link' => $site_url.'dc/review-document/' . $encryptedId
             ];
 
             $subject = $request->title . ' - QMS Document Initial Review';
@@ -427,6 +428,7 @@ class DocumentChangeController extends Controller
 
 
             $encryptedId = Crypt::encrypt($request->document_id);
+            $site_url = env('site_url');
 
             $details = [
                 'name' => 'STII Document Custodian',
@@ -438,7 +440,7 @@ class DocumentChangeController extends Controller
                 ",
                 'sender' => $user->full_name,
                 'position' => $user->position,
-                'link' => 'http://127.0.0.1:8000/dc/review-document/' . $encryptedId
+                'link' => $site_url.'dc/review-document/' . $encryptedId
             ];
 
 

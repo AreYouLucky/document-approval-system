@@ -67,6 +67,7 @@ class QMRReviewController extends Controller
                     'password' => $type == '0' ? env('qmr_pass') : env('tm_pass'),
                 ];
 
+
                 if (Auth::guard('hris')->attempt($credentials)) {
                     if (Auth::guard('hris')->user()) {
                         return Inertia::render('Auth/LoginCode');
@@ -85,6 +86,7 @@ class QMRReviewController extends Controller
 
     public function validateQmrCode(Request $req)
     {
+        return 'test';
         $req->validate([
             'code' => 'required'
         ]);
@@ -229,6 +231,7 @@ class QMRReviewController extends Controller
                 'action_made' => 'QMR audited document id ' . $request->document_id . ' on revision ' . $request->revision_id . 'status: ' . $status,
                 'affected_user' => 0
             ]);
+            $site_url = env('site_url');
             if ($request->status == 1) {
                 $encryptedId = Crypt::encrypt($request->document_id);
                 $details = [
@@ -240,7 +243,7 @@ class QMRReviewController extends Controller
                     ",
                     'sender' => $user->full_name,
                     'position' => $user->position,
-                    'link' => url('/dc/final-review-document/' . $encryptedId)
+                    'link' => $site_url.'dc/final-review-document/' . $encryptedId
                 ];
 
                 $subject = $request->title . ' - QMS Document Final Review';
@@ -271,16 +274,23 @@ class QMRReviewController extends Controller
 
     public function loadForReviewDocuments()
     {
+
+        $user = Auth::guard('hris')->user();
+        $is_qmr = 1;
+        if($user->qms_role == 'QMR'){
+            $is_qmr = 0;
+        }
+
         return DocumentRevision::where('progress_status', 2)
             ->join('documents', 'document_revisions.document_id', '=', 'documents.document_id')
+            ->where('document_revisions.is_qmr',$is_qmr)
             ->whereRaw('document_revisions.revision_id = (SELECT MAX(revision_id) FROM document_revisions WHERE document_id = documents.document_id)')
             ->get();
     }
 
     public function loadApprovedDocuments()
     {
-        return DocumentRevision::select('document_revisions.*')
-            ->join('documents', 'document_revisions.document_id', '=', 'documents.document_id')
+        return DocumentRevision::join('documents', 'document_revisions.document_id', '=', 'documents.document_id')
             ->whereNot('document_revisions.process_type', 3)
             ->whereRaw('document_revisions.revision_id = (
             SELECT MAX(dr.revision_id)

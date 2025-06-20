@@ -11,7 +11,7 @@ import SearchBar from "../Clickables/SearchBar";
 export default function SideNav({ user, isOpen, setIsOpen }) {
     const { url } = usePage();
     const avatarSrc = user.image_path
-        ? `http://hris.stii.local/frontend/hris/images/user_image/${user.image_path}`
+        ? `/storage/user_image/${user.image_path}`
         : "/storage/images/unknown-user.png";
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     useEffect(() => {

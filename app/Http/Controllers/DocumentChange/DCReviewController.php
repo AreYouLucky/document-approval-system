@@ -219,6 +219,8 @@ class DCReviewController extends Controller
                 'affected_user' => 0
             ]);
 
+            $site_url = env('site_url');
+
             if ($request->status == 1) {
                 $encryptedId = base64_encode($request->document_id);
                 $encrypted = Crypt::encrypt($request->document_id);
@@ -230,7 +232,7 @@ class DCReviewController extends Controller
                     'sender' => $user->full_name,
                     'position' => 'Document Custodian,  ' . $user->position,
                     'code' => $encryptedId,
-                    'link' => 'http://127.0.0.1:8000/qmr/review-document/' . $encrypted . '/' . $request->is_qmr
+                    'link' => $site_url.'qmr/review-document/' . $encrypted . '/' . $request->is_qmr
                 ];
 
                 $subject = $request->title . ' - QMS Document Review';
@@ -259,7 +261,7 @@ class DCReviewController extends Controller
 
     public function finalReview()
     {
-        if (Auth::user()) {
+        if (Auth::guard('hris')->user()) {
             return Inertia::render('DocumentChange/Dc/DcFinalReview');
         } else {
             return Inertia::render(('Auth/FinalLoginDc'));

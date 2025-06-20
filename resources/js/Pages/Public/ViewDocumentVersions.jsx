@@ -61,29 +61,15 @@ function ViewDocumentVersions() {
         getVersionLogs(documentId, selected.revision_id)
     };
 
+
     const handleDownloadWithStamp = async () => {
-        const url = `/storage/iso_documents/${currentData.pdf_dir}`;
-        const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
-
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-        const pages = pdfDoc.getPages();
-
-        pages.forEach((page) => {
-            page.drawText('CONTROLLED COPY', {
-                x: 50,
-                y: 50,
-                size: 24,
-                color: rgb(1, 0, 0),
-                opacity: 0.5,
-            });
-        });
-
-        const pdfBytes = await pdfDoc.save();
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = currentData.pdf_dir;
-        link.click();
+        try {
+            const response = await fetch('/storage/iso_documents/' + currentData.pdf_dir);
+            const blob = await response.blob();
+            saveAs(blob, currentData.pdf_dir);
+        } catch (error) {
+            console.error("Download failed:", error);
+        }
     };
 
 
@@ -101,7 +87,6 @@ function ViewDocumentVersions() {
                                 width="100%"
                                 height="900px"
                             />}
-
                     </div>
 
                     <div className=''>

@@ -31,6 +31,8 @@ Route::get('/view-pdf/{pdf}', [DocumentChangeController::class, 'viewPdf']);
 
 //Authenticated Routes
 Route::middleware(['auth:hris'])->group(function () {
+    Route::get('/api-ip', [\App\Http\Controllers\CredentialsController::class, 'getApiIp']);
+
     Route::get('/logout', [\App\Http\Controllers\Auth\LoginController::class, 'logout']);
     Route::get('/dashboard', function () {
         return Inertia::render('Public/Dashboard');
@@ -125,8 +127,8 @@ Route::middleware(['auth', 'role:[QMR,Super Admin'])->group(function () {
     Route::resource('/audit-document', AuditDocumentController::class);
 });
 
-//QMR ROUTES
-Route::middleware(['auth:hris', 'role:QMR'])->group(function () {
+//QMR ROUTES | Top Management
+Route::middleware(['auth:hris', 'role:QMR,Top Management'])->group(function () {
     Route::get('/qmr/document-list', function () {
         return Inertia::render('DocumentChange/QMR/DocumentList/ForReviewList');
     });
@@ -137,11 +139,11 @@ Route::middleware(['auth:hris', 'role:QMR'])->group(function () {
 
 
 
-    Route::post('/qmr/submit-code', [QMRReviewController::class, 'validateQmrCode']);
     Route::get('/qmr/view-document/{id}', [QMRReviewController::class, 'reviewDocument']);
     Route::get('/qmr/get-document-details/{id}', [QMRReviewController::class, 'getDocumentDetails']);
     Route::post('/qmr/post-review-documents', [QMRReviewController::class, 'postQMRReview']);
 });
+Route::post('/qmr/submit-code', [QMRReviewController::class, 'validateQmrCode']);
 
 
 Route::get('/send-mail', [MailController::class, 'sendEmail']);
