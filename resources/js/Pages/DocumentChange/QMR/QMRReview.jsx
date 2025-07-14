@@ -312,7 +312,7 @@ function DcInitialReview() {
                         {document.latest_revision?.file_type === 1 ? (
                             <div className='w-full rounded-lg overflow-hidden shadow-xl bg-gray-50 dark:bg-gray-800'>
                                 <DocumentEditorContainerComponent height={'90vh'}
-                                    serviceUrl={`http://${ip}:7087/api/documenteditor/`}
+                                    serviceUrl={`${ip}:7087/api/documenteditor/`}
                                     ref={(ins => editorObj = ins)}
                                     toolbarItems={items}
                                     enableToolbar={true}
@@ -327,8 +327,8 @@ function DcInitialReview() {
                                 <div className='col-span-3'>
                                     <SpreadsheetComponent
                                         ref={spreadsheetRef} height={'90vh'}
-                                        openUrl={`http://${ip}:7086/api/Spreadsheet/Open`}
-                                        saveUrl={`http://${ip}:7086/api/Spreadsheet/Save`}
+                                        openUrl={`${ip}:7086/api/Spreadsheet/Open`}
+                                        saveUrl={`${ip}:7086/api/Spreadsheet/Save`}
                                         allowOpen={true}
                                         allowSave={true}
                                         beforeSave={beforeSave}

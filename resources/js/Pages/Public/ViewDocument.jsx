@@ -157,7 +157,7 @@ export default function ViewDocument() {
                             {document.file_type === 1 ? (
                                 <div className='w-full'>
                                     <DocumentEditorContainerComponent height={'95vh'}
-                                        serviceUrl={`http://${ip}:7087/api/documenteditor/`}
+                                        serviceUrl={`${ip}:7087/api/documenteditor/`}
                                         ref={(ins => editorObj = ins)}
                                         enableToolbar={true}
                                         toolbarItems={items}
@@ -170,7 +170,7 @@ export default function ViewDocument() {
                                     <SpreadsheetComponent
                                         ref={spreadsheetRef} height={'95vh'}
                                         allowEditing={false}    
-                                        openUrl={`http://${ip}:7086/api/Spreadsheet/Open`}
+                                        openUrl={`${ip}:7086/api/Spreadsheet/Open`}
                                         allowOpen={true}
                                     />
                                 </div>

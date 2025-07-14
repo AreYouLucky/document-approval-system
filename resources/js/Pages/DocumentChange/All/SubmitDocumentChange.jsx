@@ -408,7 +408,7 @@ export default function Dashboard() {
                                             <DocumentEditorContainerComponent
                                                 height="90vh"
                                                 style={{ width: '100%', overflow: 'hidden' }}
-                                                serviceUrl={`http://${ip}:7087/api/documenteditor/`}
+                                                serviceUrl={`${ip}:7087/api/documenteditor/`}
                                                 ref={(ins) => (editorObj = ins)}
                                                 toolbarItems={items}
                                                 enableToolbar={true}
@@ -419,8 +419,8 @@ export default function Dashboard() {
                                         ) : (
                                             <SpreadsheetComponent
                                                 ref={spreadsheetRef}
-                                                openUrl={`http://${ip}:7086/api/Spreadsheet/Open`}
-                                                saveUrl={`http://${ip}:7086/api/Spreadsheet/Save`}
+                                                openUrl={`${ip}:7086/api/Spreadsheet/Open`}
+                                                saveUrl={`${ip}:7086/api/Spreadsheet/Save`}
                                                 allowOpen={true}
                                                 allowSave={true}
                                                 beforeSave={beforeSave}

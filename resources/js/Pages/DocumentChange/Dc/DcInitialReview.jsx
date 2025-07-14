@@ -277,7 +277,7 @@ function DcInitialReview() {
                                 </div>
                                 <div className='flex mt-3 gap-2 flex-wrap justify-center'>
                                     <button className='bg-blue-500 text-gray-50 rounded-lg px-4 py-3' onClick={() => openDialog(1)} disabled={processing}>
-                                        <span className='text-sm flex items-center justify-center font-mono'> Forward to QMR
+                                        <span className='text-sm flex items-center justify-center font-mono'> Forward to {document.latest_revision?.is_qmr == 1 ? 'Top Management' : 'QMR'}
                                             {processing ? <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div> :
                                                 <div>
                                                     <CiCircleCheck size={20} className='ml-2' />
@@ -308,7 +308,7 @@ function DcInitialReview() {
                         {document.latest_revision?.file_type === 1 ? (
                             <div className='w-full rounded-lg overflow-hidden shadow-xl bg-gray-50 dark:bg-gray-800'>
                                 <DocumentEditorContainerComponent height={'90vh'}
-                                    serviceUrl={`http://${ip}:7087/api/documenteditor/`}
+                                    serviceUrl={`${ip}:7087/api/documenteditor/`}
                                     ref={(ins => editorObj = ins)}
                                     toolbarItems={items}
                                     enableToolbar={true}
@@ -323,8 +323,8 @@ function DcInitialReview() {
                                 <div className='col-span-3'>
                                     <SpreadsheetComponent
                                         ref={spreadsheetRef} height={'90vh'}
-                                        openUrl={`http://${ip}:7086/api/Spreadsheet/Open`}
-                                        saveUrl={`http://${ip}:7086/api/Spreadsheet/Save`}
+                                        openUrl={`${ip}:7086/api/Spreadsheet/Open`}
+                                        saveUrl={`${ip}:7086/api/Spreadsheet/Save`}
                                         allowOpen={true}
                                         allowSave={true}
                                         beforeSave={beforeSave}

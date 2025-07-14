@@ -442,7 +442,7 @@ export default function DcFinalReview() {
                                 {document.latest_revision?.file_type === 1 ? (
                                     <div className='w-full'>
                                         <DocumentEditorContainerComponent height={'97vh'}
-                                            serviceUrl={`https://${ip}:7087/api/documenteditor/`}
+                                            serviceUrl={`${ip}:7087/api/documenteditor/`}
                                             ref={(ins => editorObj = ins)}
                                             enableToolbar={true}
                                             showPropertiesPane={false}>
@@ -453,8 +453,8 @@ export default function DcFinalReview() {
                                     <div className='w-full'>
                                         <SpreadsheetComponent
                                             ref={spreadsheetRef} height={'97vh'}
-                                            openUrl={`https://${ip}:7086/api/Spreadsheet/Open`}
-                                            saveUrl={`https://${ip}:7086/api/Spreadsheet/Save`}
+                                            openUrl={`${ip}:7086/api/Spreadsheet/Open`}
+                                            saveUrl={`${ip}:7086/api/Spreadsheet/Save`}
                                             allowOpen={true}
                                             allowSave={true}
                                             beforeSave={beforeSave}

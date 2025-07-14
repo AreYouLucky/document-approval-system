@@ -478,7 +478,8 @@ export default function ReviseDocument() {
                         <div className='p-5'>
                           <b>Remarks:</b> <span>{remarks.remarks}</span>
                         </div>
-                        <DocumentEditorContainerComponent height={'90vh'} serviceUrl={`https://${ip}:7087/api/documenteditor/`}
+                        <DocumentEditorContainerComponent height={'90vh'} 
+                          serviceUrl={`${ip}:7087/api/documenteditor/`}
                           ref={(ins => editorObj = ins)}
                           toolbarItems={items}
                           enableToolbar={true}
@@ -495,8 +496,8 @@ export default function ReviseDocument() {
                           <div className='col-span-3'>
                             <SpreadsheetComponent
                               ref={spreadsheetRef} height={'90vh'}
-                              openUrl={`http://${ip}:7086/api/Spreadsheet/Open`}
-                              saveUrl={`http://${ip}:7086/api/Spreadsheet/Save`}
+                              openUrl={`${ip}:7086/api/Spreadsheet/Open`}
+                              saveUrl={`${ip}:7086/api/Spreadsheet/Save`}
                               allowOpen={true}
                               allowSave={true}
                               beforeSave={beforeSave}

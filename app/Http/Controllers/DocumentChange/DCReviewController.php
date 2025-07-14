@@ -136,10 +136,10 @@ class DCReviewController extends Controller
             }
 
             if ($request->is_qmr == 1) {
-                $name = 'Top management';
+                $name = 'STII Top management';
                 $email = env('tm_email');
             } else {
-                $name = 'QMR';
+                $name = 'STII Quality Management Representative';
                 $email = env('qmr_email');
             }
 
@@ -225,7 +225,7 @@ class DCReviewController extends Controller
                 $encryptedId = base64_encode($request->document_id);
                 $encrypted = Crypt::encrypt($request->document_id);
                 $details = [
-                    'name' => 'STII Quality Management Representative',
+                    'name' => $name,
                     'message' => "
                     I hope this email finds you well.  
                     I am reaching out to request your review of " . $request->title . " , Revision No. " . $request->last_revision_no . ". This is already reviewed by yours truly. Use this code to access the document: ",
@@ -309,19 +309,17 @@ class DCReviewController extends Controller
         ]);
 
         try {
-            $file = $request->file('file');
+             $file = $request->file('file');
             $file->storeAs('/iso_documents', $request->filename, 'public');
             $wordPath = storage_path('app/public/iso_documents/' . $request->filename);
             $pdfDirectory = storage_path('app/public/iso_documents/');
             $libreOfficePath = env('libre_office_path');
+            $tempProfile = '/tmp/libreoffice_profile_' . uniqid();
+            $env = 'export HOME=' . escapeshellarg($tempProfile) . ' && ';
 
-            // Escape paths
-            $libreOfficePath = escapeshellarg($libreOfficePath);
+            $command =  $env . "$libreOfficePath --headless --convert-to pdf --outdir $pdfDirectory $wordPath";
 
-            $command = "$libreOfficePath --headless --convert-to pdf --outdir $pdfDirectory $wordPath";
-
-
-            shell_exec($command);
+            exec($command . ' 2>&1', $output, $returnCode);
             $originalNameWithoutExtension = pathinfo($request->filename, PATHINFO_FILENAME);
             $convertedPdfPath = $pdfDirectory . $originalNameWithoutExtension . '.pdf';
             $newPdfFileName = $originalNameWithoutExtension . '_' . $request->version . '.pdf';
@@ -331,6 +329,7 @@ class DCReviewController extends Controller
             } else {
                 throw new \Exception('PDF conversion failed: Output file not found.');
             }
+
 
             $parser = new Parser();
             $pdf = $parser->parseFile(storage_path('app/public/iso_documents/' . $newPdfFileName));
