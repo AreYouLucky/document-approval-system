@@ -16,8 +16,6 @@ function GuestDashboardLayout({ children }) {
     const { url } = usePage();
     const [darkMode, setDarkMode] = useState(false);
 
-
-
     useEffect(() => {
         if (darkMode) {
             document.documentElement.classList.add("dark");
